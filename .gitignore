@@ -1,3 +1,6 @@
+# key specific ignores
+/dataprocessing
+/backend/Beehiveproject\ data.json
 
 # Python-specific ignores
 /backend/__pycache__/
