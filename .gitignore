@@ -1,0 +1,59 @@
+
+# Python-specific ignores
+/backend/__pycache__/
+/backend/*.py[cod]
+/backend/*$py.class
+/backend/.env
+*.pyc
+
+# Flask-specific ignores
+/backend/instance/
+/backend/*.sqlite
+
+# General Python ignores
+*.py[cod]
+__pycache__/
+*.pyc
+
+# Node-specific ignores
+/frontend/node_modules/
+/frontend/package-lock.json
+/frontend/yarn.lock
+/frontend/.env
+
+# Logs and databases
+*.log
+*.sqlite
+*.sqlite3
+
+# Documentation and notes should not be ignored unless explicitly desired
+# /docs/
+
+# Docker - generally, you want to keep the docker-compose.yml tracked
+# docker-compose.yml
+
+# System OS files
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+*.atom
+*.iml
+
+# Other common directories to ignore
+coverage/
+.nyc_output
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
