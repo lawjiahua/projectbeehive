@@ -2,6 +2,8 @@ import React from 'react';
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import { Alert } from '../models/Alert';
 import { Beehive } from '../models/Beehive';
+import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 interface HomePageProps {
   alerts: Alert[];
@@ -47,8 +49,8 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, beehives }) => {
           <TableBody>
             {beehives.map((beehive, index) => (
               <TableRow key={index}>
-                <TableCell>{beehive.name}</TableCell>
-                <TableCell>{beehive.lastUpdate}</TableCell>
+                <TableCell><Link to={`/beehive/${beehive.name}`}>{beehive.name}</Link></TableCell>
+                <TableCell>{formatDistanceToNow(new Date(beehive.lastUpdate), { addSuffix: true })}</TableCell>
               </TableRow>
             ))}
           </TableBody>

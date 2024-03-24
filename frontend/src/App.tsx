@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage'; // Assuming you have a HomePage component
 import LoginPage from './pages/LoginPage'; // Assuming you have a LoginPage component
+import BeehivePage from './pages/BeehivePage';
 import { Alert } from './models/Alert';
 import { Beehive } from './models/Beehive';
 
@@ -12,7 +13,14 @@ const alerts: Alert[] = [
 ];
 
 const beehives: Beehive[] = [
-  // Populate with Beehive objects
+  {
+    name: 'beehive1',
+    lastUpdate: '2024-03-23T15:24:14.993704', // Yesterday
+  },
+  {
+    name: 'beehive2',
+    lastUpdate: '2024-03-17T15:24:14.993754', // One week ago
+  }
 ];
 
 const App: React.FC = () => {
@@ -28,6 +36,9 @@ const App: React.FC = () => {
       </Routes>
       <Routes>
         <Route path="/" element={<HomePage alerts={alerts} beehives={beehives} />} />
+      </Routes>
+      <Routes>
+        <Route path="/beehive/:name" element={<BeehivePage />} />
       </Routes>
     </Router>
   );
