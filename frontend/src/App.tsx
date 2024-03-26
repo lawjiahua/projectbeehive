@@ -10,6 +10,11 @@ import { Beehive } from './models/Beehive';
 // Sample data for demonstration
 const alerts: Alert[] = [
   // Populate with Alert objects
+  {
+    message: "This is test alert",
+    lastUpdate: new Date(),
+    timeSinceStart: new Date()
+  }
 ];
 
 const beehives: Beehive[] = [

@@ -25,11 +25,11 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, beehives }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {alerts.map((alert) => (
-              <TableRow key={alert.id}>
+            {alerts.map((alert, index) => (
+              <TableRow key={index}>
                 <TableCell>{alert.message}</TableCell>
-                <TableCell>{alert.lastUpdate}</TableCell>
-                <TableCell>{alert.timeSinceStart}</TableCell>
+                <TableCell>{formatDistanceToNow(alert.lastUpdate)}</TableCell>
+                <TableCell>{formatDistanceToNow(alert.timeSinceStart)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

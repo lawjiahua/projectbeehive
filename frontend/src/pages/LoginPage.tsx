@@ -1,15 +1,19 @@
 import React from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
+  let navigate = useNavigate();
   const handleLogin = () => {
     // Implement login logic here
     console.log('Login');
+    window.location.href = 'http://127.0.0.1:5000/login'; 
   };
 
   const handleRegister = () => {
     // Implement register logic here
     console.log('Register');
+    navigate("http://127.0.0.1:5000/login", { replace: true })
   };
 
   return (

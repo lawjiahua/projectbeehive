@@ -1,4 +1,5 @@
 import logging
+from bson.json_util import dumps
 import jwt
 from functools import wraps
 from flask import request, session, jsonify
@@ -45,6 +46,9 @@ except Exception as e:
 db = client["beehive"]
 measurements_collection = db["measurements"]  
 users_collection = db['users']
+weight_collection = db['weight']
+temp_collection = db['temperature']
+beeActivity_collection = db['beeActivity']
 
 #################################################################
 # Actual BE logic here 
@@ -58,6 +62,8 @@ def login():
     google = oauth.create_client('google')
     # Redirect to Google for authorization
     redirect_uri = url_for('authorize', _external=True)
+    print("REDIRECT URI ---------")
+    print(redirect_uri)
     return google.authorize_redirect(redirect_uri)
 
 @app.route('/authorize')
@@ -189,6 +195,21 @@ def get_beehive_data(beehive_name):
 
         return jsonify(documents)
 
+@app.route('/weights')
+def get_weights():
+    weights = weight_collection.find({})
+    # Use dumps from bson.json_util to handle ObjectId serialization
+    return dumps(weights)
+
+@app.route('/temperatures')
+def get_temperatures():
+    temperatures = temp_collection.find({})
+    return dumps(temperatures)
+
+@app.route('/beeActivities')
+def get_bee_activities():
+    bee_activities = beeActivity_collection.find({})
+    return dumps(bee_activities)
 @app.route('/test')
 def test_route():
     app.logger.debug('test route accessed')
