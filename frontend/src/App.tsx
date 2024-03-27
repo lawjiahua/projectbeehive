@@ -7,11 +7,11 @@ import BeehivePage from './pages/BeehivePage';
 import ApiService from './services/ApiService';
 
 const App: React.FC = () => {
-  // const isLoggedIn = true; // You would replace this with actual authentication logic
+  const isLoggedIn = true; // You would replace this with actual authentication logic
   const fakeusername = "Leong"; // Replace with actual data
   const avatarSrc = "path/to/avatar.jpg"; // Replace with actual data
   const [username, setUsername] = useState<string>();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -19,7 +19,7 @@ const App: React.FC = () => {
         const response = await ApiService.fetchUserInfo()
         // Assuming `data` contains fields like `username` and `avatarSrc`
         setUsername(response.name);
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
@@ -30,7 +30,7 @@ const App: React.FC = () => {
   
   return (
     <Router>
-      {isLoggedIn && <Header username={username as string} avatarSrc={avatarSrc} />}
+      {isLoggedIn && <Header username={fakeusername as string} avatarSrc={avatarSrc} />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
       </Routes>

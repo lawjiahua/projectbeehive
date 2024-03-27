@@ -1,5 +1,7 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Avatar, Grid } from '@mui/material';
+import { AppBar, Toolbar, Typography, Avatar, Grid, IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; 
+import HomeIcon from '@mui/icons-material/Home';
 
 interface HeaderProps {
   username: string;
@@ -7,13 +9,17 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ username, avatarSrc }) => {
+  const navigate = useNavigate();
   return (
     <AppBar position="static">
       <Toolbar>
         <Grid container justifyContent="space-between" alignItems="center">
           {/* App Logo and Name */}
           <Grid item>
-            <Typography variant="h6">My App</Typography>
+          <IconButton onClick={() => navigate('/')} color="inherit">
+              <HomeIcon /> {/* Home icon */}
+              <Typography variant="h6" style={{ marginLeft: '10px' }}>Beehive monitoring</Typography>
+            </IconButton>
           </Grid>
           {/* User Info */}
           <Grid item>

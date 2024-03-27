@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import { Chart } from 'react-google-charts';
-import { BeehiveData, BeehiveAlert } from '../models/BeehiveData';
 import { Container, Paper, Typography, Box, Grid } from '@mui/material';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress } from '@mui/material';
 import { BeeActivityDataPoint } from '../models/BeeActivityDataPoint';
@@ -122,7 +121,7 @@ const BeehivePage: React.FC = () => {
                 options={{ ...options, title: 'Weight Over Time' }}
               />
               <Chart
-                chartType="LineChart"
+                chartType="ScatterChart"
                 width="100%"
                 height="400px"
                 data={chartData.infraredReading}
