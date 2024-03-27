@@ -40,7 +40,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
       </Routes>
       <Routes>
-        <Route path="/" element={<HomePage alerts={alerts} beehives={beehives} />} />
+        <Route path="/" element={<HomePage />} />
       </Routes>
       <Routes>
         <Route path="/beehive/:name" element={<BeehivePage />} />

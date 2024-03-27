@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import { Chart } from 'react-google-charts';
 import { BeehiveData, BeehiveAlert } from '../models/BeehiveData';
@@ -92,6 +92,7 @@ export const formatDate = (isoDateString: string): string => {
 
 const BeehivePage: React.FC = () => {
   let { name } = useParams<{ name: string }>();
+  
 
   // Data for the charts
   const chartData = {

@@ -1,16 +1,36 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import { Alert } from '../models/Alert';
 import { Beehive } from '../models/Beehive';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
+import ApiService from '../services/ApiService';
 
 interface HomePageProps {
   alerts: Alert[];
   beehives: Beehive[];
 }
 
-const HomePage: React.FC<HomePageProps> = ({ alerts, beehives }) => {
+const HomePage: React.FC = () => {
+  const [beehives, setBeehives] = useState<Beehive[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const beehiveData = await ApiService.fetchAllBeehives();
+        setBeehives(beehiveData);
+        const alertData = await ApiService.fetchAllAlerts();
+        setAlerts(alertData);
+        console.log(alertData) 
+      } catch (error) {
+        console.error("Failed to fetch beehives:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div style={{ padding: '20px' }}>
       {/* Alerts Section */}
@@ -21,7 +41,7 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, beehives }) => {
             <TableRow>
               <TableCell>Message</TableCell>
               <TableCell>Last Update</TableCell>
-              <TableCell>Time Since Start</TableCell>
+              {/* <TableCell>Time Since Start</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -29,7 +49,7 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, beehives }) => {
               <TableRow key={index}>
                 <TableCell>{alert.message}</TableCell>
                 <TableCell>{formatDistanceToNow(alert.lastUpdate)}</TableCell>
-                <TableCell>{formatDistanceToNow(alert.timeSinceStart)}</TableCell>
+                {/* <TableCell>{formatDistanceToNow(alert.timeSinceStart)}</TableCell> */}
               </TableRow>
             ))}
           </TableBody>

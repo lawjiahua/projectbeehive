@@ -1,5 +1,5 @@
 import logging
-from bson.json_util import dumps
+from bson.json_util import dumps 
 import jwt
 from functools import wraps
 from flask import request, session, jsonify
@@ -7,18 +7,21 @@ from flask import Flask, redirect, url_for, session, make_response
 from authlib.integrations.flask_client import OAuth
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient 
+from pymongo import MongoClient, DESCENDING 
 from pymongo.server_api import ServerApi
 from datetime import datetime, timezone, timedelta
 import datetime as dt
 import pytz
 from google.auth.transport import requests
+from flask_cors import CORS
 
 load_dotenv()
 app = Flask(__name__)
+CORS(app)
 logging.basicConfig(level=logging.DEBUG)
 # Secret key for session management. You should use a more secure key.
 app.secret_key = os.getenv('SECRET_KEY')
+
 
 # OAuth setup
 oauth = OAuth(app)
@@ -49,6 +52,7 @@ users_collection = db['users']
 weight_collection = db['weight']
 temp_collection = db['temperature']
 beeActivity_collection = db['beeActivity']
+alert_collection = db['alert']
 
 #################################################################
 # Actual BE logic here 
@@ -195,11 +199,47 @@ def get_beehive_data(beehive_name):
 
         return jsonify(documents)
 
+@app.route('/beehives')
+# this endpoint returns all beehives name with their last updated weight measurement
+def get_beehives():
+    pipeline = [
+        {
+            '$sort': {'timestamp': DESCENDING}  # Ensure the latest timestamp comes first
+        },
+        {
+            '$group': {
+                '_id': '$beehive',  # Group by beehive
+                'lastUpdate': {'$first': '$timestamp'}  # Get the first (latest) timestamp after sorting
+            }
+        },
+        {
+            '$project': {
+                '_id': 0,  # Exclude the _id field from the result
+                'name': '$_id',  # Set the name field to the value of _id (beehive name)
+                'lastUpdate': 1  # Include the lastUpdate field
+            }
+        }
+    ]
+    result = list(weight_collection.aggregate(pipeline))
+    return jsonify(result)
+
 @app.route('/weights')
 def get_weights():
     weights = weight_collection.find({})
     # Use dumps from bson.json_util to handle ObjectId serialization
-    return dumps(weights)
+    processed_weights = [] 
+    for doc in weights:
+            # Directly format datetime object to string in ISO format
+            timestamp = doc.get("timestamp")
+            formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
+
+            processed_doc = {
+                "reading": doc.get("reading"),
+                "timestamp": formatted_timestamp,
+                "beehive": doc.get("beehive")
+            }
+            processed_weights.append(processed_doc)
+    return jsonify(processed_weights)
 
 @app.route('/temperatures')
 def get_temperatures():
@@ -210,10 +250,124 @@ def get_temperatures():
 def get_bee_activities():
     bee_activities = beeActivity_collection.find({})
     return dumps(bee_activities)
+
+@app.route('/alerts')
+def get_alert_test():
+   alerts = alert_collection.find({}).sort("timestamp", -1)
+   return process_alert_results(alerts) 
+
+@app.route('/weights/<beehive_name>')
+def get_weights_by_beehive_name(beehive_name):
+    return jsonify(fetch_weight_by_beehive_name(beehive_name))
+
+@app.route('/temperatures/<beehive_name>')
+def get_temperatures_by_beehive_name(beehive_name):
+    return jsonify(fetch_temperature_by_beehive_name(beehive_name))
+
+@app.route('/beeActivities/<beehive_name>')
+def get_bee_activities_by_beehive_name(beehive_name):
+    return jsonify(fetch_beeActivity_by_beehive_name(beehive_name))
+
+@app.route('/alert/<beehive_name>')
+def get_alert_by_beehive_name(beehive_name):
+    return jsonify(fetch_alert_by_beehive_name(beehive_name))
+
+@app.route('/individualBeehiveData/<beehive_name>')
+def get_individual_beehive_data(beehive_name):
+    return ({
+        "alerts": fetch_alert_by_beehive_name(beehive_name),
+        "beeActivityReadings": fetch_beeActivity_by_beehive_name(beehive_name),
+        "temperatureReadings": fetch_temperature_by_beehive_name(beehive_name),
+        "weightReadings": fetch_weight_by_beehive_name(beehive_name)
+        })
+
 @app.route('/test')
 def test_route():
     app.logger.debug('test route accessed')
     return jsonify({"message": "Test route works!"})
+
+def fetch_weight_by_beehive_name(beehive_name):
+    weights = weight_collection.find({"beehive": beehive_name})
+    processed_weights = [] 
+    for doc in weights:
+        # Directly format datetime object to string in ISO format
+        timestamp = doc.get("timestamp")
+        formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
+
+        processed_doc = {
+            "reading": doc.get("reading"),
+            "timestamp": formatted_timestamp,
+            "beehive": doc.get("beehive")
+        }
+        processed_weights.append(processed_doc)
+    return processed_weights
+
+def fetch_temperature_by_beehive_name(beehive_name):
+    temperatures = temp_collection.find({"beehive": beehive_name})
+    processed_temp = [] 
+    for doc in temperatures:
+        # Directly format datetime object to string in ISO format
+        timestamp = doc.get("timestamp")
+        formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
+
+        processed_doc = {
+            "reading": doc.get("reading"),
+            "timestamp": formatted_timestamp,
+            "beehive": doc.get("beehive")
+        }
+        processed_temp.append(processed_doc) 
+    return processed_temp
+
+def fetch_beeActivity_by_beehive_name(beehive_name):
+    bee_activities = beeActivity_collection.find({"beehive": beehive_name})
+    processed_beeActivity = [] 
+    for doc in bee_activities:
+            # Directly format datetime object to string in ISO format
+            timestamp = doc.get("timestamp")
+            formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
+
+            processed_doc = {
+                "reading": int(doc.get("reading")),
+                "timestamp": formatted_timestamp,
+                "beehive": doc.get("beehive")
+            }
+            processed_beeActivity.append(processed_doc) 
+    return processed_beeActivity
+
+def fetch_alert_by_beehive_name(beehive_name):
+    alerts = alert_collection.find({"beehive": beehive_name})
+    processed_alerts = [] 
+    for doc in alerts:
+            # Directly format datetime object to string in ISO format
+            timestamp = doc.get("timestamp")
+            formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
+
+            processed_doc = {
+                "reading": doc.get("reading"),
+                "timestamp": formatted_timestamp,
+                "beehive": doc.get("beehive")
+            }
+            processed_alerts.append(processed_doc) 
+    return processed_alerts
+
+def process_alert_results(results):
+    # Initialize an empty list to hold the processed documents
+    processed_results = []
+    
+    for doc in results:
+        # Extract the message and timestamp from each document
+        message = doc.get("message")  
+        timestamp = doc.get("timestamp")
+        formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
+        processed_results.append({
+            "message": message,
+            "lastUpdate": timestamp
+        })
+        print(message)
+
+    # Convert the list of processed documents to JSON
+    json_results = jsonify(processed_results)
+    return json_results
 
 if __name__ == '__main__':
     app.run(debug=True)
