@@ -22,7 +22,6 @@ const HomePage: React.FC = () => {
         setBeehives(beehiveData);
         const alertData = await ApiService.fetchAllAlerts();
         setAlerts(alertData);
-        console.log(alertData) 
       } catch (error) {
         console.error("Failed to fetch beehives:", error);
       }

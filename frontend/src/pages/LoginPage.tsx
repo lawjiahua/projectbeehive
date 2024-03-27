@@ -1,19 +1,16 @@
 import React from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import ApiService from '../services/ApiService';
 
 const LoginPage: React.FC = () => {
-  let navigate = useNavigate();
+
   const handleLogin = () => {
-    // Implement login logic here
-    console.log('Login');
-    window.location.href = 'http://127.0.0.1:5000/login'; 
+    ApiService.loginWithGoogle()
   };
 
   const handleRegister = () => {
-    // Implement register logic here
-    console.log('Register');
-    navigate("http://127.0.0.1:5000/login", { replace: true })
+    ApiService.loginWithGoogle()
   };
 
   return (
@@ -28,14 +25,14 @@ const LoginPage: React.FC = () => {
         {/* App Logo */}
         <Box
           component="img"
-          src="/path-to-your-logo.png" // Replace with your logo path
+          src="../../public/beekeeperLogo.png" // Replace with your logo path
           alt="App Logo"
           sx={{ width: 120, height: 120 }} // Adjust size as needed
         />
 
         {/* App Name */}
         <Typography variant="h4" component="h1" marginTop={2}>
-          My App
+         Bee Monitoring App
         </Typography>
 
         {/* Buttons */}

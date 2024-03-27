@@ -1,41 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage'; // Assuming you have a HomePage component
 import LoginPage from './pages/LoginPage'; // Assuming you have a LoginPage component
 import BeehivePage from './pages/BeehivePage';
-import { Alert } from './models/Alert';
-import { Beehive } from './models/Beehive';
-
-// Sample data for demonstration
-const alerts: Alert[] = [
-  // Populate with Alert objects
-  {
-    message: "This is test alert",
-    lastUpdate: new Date(),
-    timeSinceStart: new Date()
-  }
-];
-
-const beehives: Beehive[] = [
-  {
-    name: 'beehive1',
-    lastUpdate: '2024-03-23T15:24:14.993704', // Yesterday
-  },
-  {
-    name: 'beehive2',
-    lastUpdate: '2024-03-17T15:24:14.993754', // One week ago
-  }
-];
+import ApiService from './services/ApiService';
 
 const App: React.FC = () => {
-  const isLoggedIn = true; // You would replace this with actual authentication logic
-  const username = "John Doe"; // Replace with actual data
+  // const isLoggedIn = true; // You would replace this with actual authentication logic
+  const fakeusername = "Leong"; // Replace with actual data
   const avatarSrc = "path/to/avatar.jpg"; // Replace with actual data
-
+  const [username, setUsername] = useState<string>();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await ApiService.fetchUserInfo()
+        // Assuming `data` contains fields like `username` and `avatarSrc`
+        setUsername(response.name);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+  
+    fetchUserInfo();
+  }, []);
+  
   return (
     <Router>
-      {isLoggedIn && <Header username={username} avatarSrc={avatarSrc} />}
+      {isLoggedIn && <Header username={username as string} avatarSrc={avatarSrc} />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
       </Routes>

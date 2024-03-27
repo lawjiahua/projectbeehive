@@ -86,7 +86,7 @@ def authorize():
             "user_id": user_info['id'],
             "email": user_info['email'],
             "name": user_info['name'],
-            "roles": ["viewer"],
+            "roles": ["admin"],
             "beehives": ["beehive1"],
         }
         insert_result = users_collection.insert_one(user_document) 
@@ -95,15 +95,43 @@ def authorize():
     payload = {
         'exp': datetime.now(timezone.utc) + dt.timedelta(days=1),  # Token expires in 1 day
         'iat': datetime.now(timezone.utc),  # Issued at
-        'sub': user_info['email'] 
+        'sub': user_info['email'],
+        'username': user_info['name'] 
     }
     encoded_jwt = jwt.encode(payload, app.secret_key, algorithm='HS256')
     # Create a response object to set the cookie
-    response = make_response(redirect('/'))
+    # response = make_response(redirect('http://localhost:3000'))
+    response = make_response(redirect('http://13.215.47.20:80'))
     # Here, 'token' is assumed to be a JWT or another token string you've created
     # This sets an HttpOnly cookie named 'auth_token' with the OAuth token
     response.set_cookie('auth_token', encoded_jwt, httponly=True)
     return response
+
+@app.route('/user_info')
+def user_info():
+    auth_token = request.cookies.get('auth_token')
+    if not auth_token:
+        return jsonify({'message': 'Authentication token not found'}), 401
+    
+    try:
+        # Decode the token
+        payload = jwt.decode(auth_token, app.secret_key, algorithms=['HS256'])
+        user_email = payload['sub']  # Assuming 'sub' contains the user's email
+        
+        # Query MongoDB for user details
+        user_details = users_collection.find_one({"email": user_email}, {'_id': 0})  # Exclude the MongoDB ID from the results
+        
+        if user_details:
+            return jsonify(user_details), 200
+        else:
+            return jsonify({'message': 'User not found'}), 404
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token expired'}), 401  # 401 Unauthorized
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token'}), 401
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'An error occurred'}), 500
 
 # Authorization decorater for all methods that pull beehive data. This checks whether 
 # a user has permission to access the beehive data or not
@@ -254,7 +282,7 @@ def get_bee_activities():
 @app.route('/alerts')
 def get_alert_test():
    alerts = alert_collection.find({}).sort("timestamp", -1)
-   return process_alert_results(alerts) 
+   return jsonify(process_alert_results(alerts)) 
 
 @app.route('/weights/<beehive_name>')
 def get_weights_by_beehive_name(beehive_name):
@@ -335,20 +363,8 @@ def fetch_beeActivity_by_beehive_name(beehive_name):
     return processed_beeActivity
 
 def fetch_alert_by_beehive_name(beehive_name):
-    alerts = alert_collection.find({"beehive": beehive_name})
-    processed_alerts = [] 
-    for doc in alerts:
-            # Directly format datetime object to string in ISO format
-            timestamp = doc.get("timestamp")
-            formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
-
-            processed_doc = {
-                "reading": doc.get("reading"),
-                "timestamp": formatted_timestamp,
-                "beehive": doc.get("beehive")
-            }
-            processed_alerts.append(processed_doc) 
-    return processed_alerts
+    alerts = alert_collection.find({"beehive": beehive_name}).sort("timestamp", -1)
+    return process_alert_results(alerts) 
 
 def process_alert_results(results):
     # Initialize an empty list to hold the processed documents
@@ -361,12 +377,9 @@ def process_alert_results(results):
         formatted_timestamp = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ") if timestamp else None
         processed_results.append({
             "message": message,
-            "lastUpdate": timestamp
+            "lastUpdate": formatted_timestamp
         })
-
-    # Convert the list of processed documents to JSON
-    json_results = jsonify(processed_results)
-    return json_results
+    return processed_results 
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
