@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
         {/* App Logo */}
         <Box
           component="img"
-          src="../../public/beekeeperLogo.png" // Replace with your logo path
+          src="../../../public/beekeeperLogo.png" // Replace with your logo path
           alt="App Logo"
           sx={{ width: 120, height: 120 }} // Adjust size as needed
         />
