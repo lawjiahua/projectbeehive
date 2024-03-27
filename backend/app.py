@@ -363,11 +363,10 @@ def process_alert_results(results):
             "message": message,
             "lastUpdate": timestamp
         })
-        print(message)
 
     # Convert the list of processed documents to JSON
     json_results = jsonify(processed_results)
     return json_results
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
