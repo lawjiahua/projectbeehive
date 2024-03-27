@@ -4,7 +4,7 @@ import { Alert } from "../models/Alert";
 import { Beehive } from "../models/Beehive";
 
 class ApiService {
-    private static API_BASE_URL: string = 'http://127.0.0.1:5000'; // Adjust as necessary
+    private static API_BASE_URL: string = 'http://13.215.47.20:5000'; // Adjust as necessary
   
     // Method to get authorization headers
     private static getAuthHeaders(): HeadersInit {
