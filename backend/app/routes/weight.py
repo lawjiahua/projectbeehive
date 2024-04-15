@@ -1,0 +1,51 @@
+from flask import Blueprint, jsonify
+from datetime import datetime, timedelta
+import pytz
+
+from app.db import get_db
+
+# Create a Blueprint for weight-related routes
+weight_bp = Blueprint('weight', __name__)
+
+@weight_bp.route('/weights')
+def weights_past_week():
+    # Calculate the date one week ago from now
+    one_week_ago = datetime.now(pytz.utc) - timedelta(days=7)
+
+    # Get the database collection
+    weights_collection = get_db('weight')
+    weights = list(weights_collection.find({}))
+
+    # Process the weights to be JSON serializable
+    processed_weights = []
+    for weight in weights:
+        # Convert MongoDB's ObjectId to string if necessary
+        weight['_id'] = str(weight['_id'])
+        # Ensure timestamp is in a serializable format
+        weight['timestamp'] = weight['timestamp'].isoformat() if weight.get('timestamp') else None
+        processed_weights.append(weight)
+
+    return jsonify(processed_weights)
+
+
+@weight_bp.route('/<beehive_name>')
+def weights_for_beehive(beehive_name):
+    # Get the database collection
+    weights_collection = get_db('weight')
+
+    # Query to find weights for the specified beehive
+    query = {
+        "beehive": beehive_name
+    }
+    weights = list(weights_collection.find(query))
+
+    # Process the weights to be JSON serializable
+    processed_weights = []
+    for weight in weights:
+        # Convert MongoDB's ObjectId to string if necessary
+        weight['_id'] = str(weight['_id'])
+        # Ensure timestamp is in a serializable format
+        weight['timestamp'] = weight['timestamp'].isoformat() if weight.get('timestamp') else None
+        processed_weights.append(weight)
+
+    return jsonify(processed_weights)
