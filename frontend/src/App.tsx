@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
+import { useUser } from './UserContext';
 import Header from './components/Header';
 import HomePage from './pages/HomePage'; // Assuming you have a HomePage component
 import LoginPage from './pages/LoginPage'; // Assuming you have a LoginPage component
@@ -12,21 +14,30 @@ const App: React.FC = () => {
   const avatarSrc = "path/to/avatar.jpg"; // Replace with actual data
   const [username, setUsername] = useState<string>();
   // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+
+  const { setUser } = useUser();
+  const navigate = useNavigate();
   
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await ApiService.fetchUserInfo()
-        // Assuming `data` contains fields like `username` and `avatarSrc`
-        setUsername(response.name);
-        // setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    };
-  
-    fetchUserInfo();
-  }, []);
+    const token = localStorage.getItem('jwtToken');
+
+    if (!token) {
+      // No token found, redirect to login page
+      navigate('/login');
+    } else {
+      ApiService.fetchUserInfo(token)
+        .then(data => {
+          setUser(data); // Set user data in context
+        })
+        .catch(error => {
+          console.error("Failed to fetch user info:", error);
+          if (error.message.includes('401')) { // Customize the error message check as needed
+            localStorage.removeItem('jwtToken');
+            navigate('/login');
+          }
+        });
+    }
+  }, [setUser, navigate]);
   
   return (
     <Router>

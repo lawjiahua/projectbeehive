@@ -1,16 +1,25 @@
 import React from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+
 import ApiService from '../services/ApiService';
 
 const LoginPage: React.FC = () => {
 
-  const handleLogin = () => {
-    ApiService.loginWithGoogle()
-  };
-
-  const handleRegister = () => {
-    ApiService.loginWithGoogle()
+  const handleLoginSuccess = async(response : any) => {
+    try{
+      const token = response?.credential;
+      const data = await ApiService.loginWithGoogle(token);
+      if(data.jwt){
+        localStorage.setItem('loginToken', data.jwt);
+        console.log("Token received")
+      }else{
+        console.log("Token not received")
+      }
+    }catch(error){
+      console.error('Error processing login:', error);
+    }
   };
 
   return (
@@ -37,23 +46,10 @@ const LoginPage: React.FC = () => {
 
         {/* Buttons */}
         <Box marginTop={4} width="100%">
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleLogin}
-            sx={{ marginBottom: 2 }}
-          >
-            Login
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            fullWidth
-            onClick={handleRegister}
-          >
-            Register
-          </Button>
+          <GoogleLogin
+            onSuccess={handleLoginSuccess}
+            onError={() => console.log('Login Failed')}
+          />
         </Box>
       </Box>
     </Container>
