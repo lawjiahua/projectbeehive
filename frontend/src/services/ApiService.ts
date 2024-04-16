@@ -4,8 +4,8 @@ import { IndividalBeehiveResponse } from "../models/IndividualBeehiveResponse";
 import { User } from "../models/User";
 
 class ApiService {
-  // private static API_BASE_URL: string = 'http://127.0.0.1:5000'; // local test 
-  private static API_BASE_URL: string = 'http://13.215.47.20:5000'; // aws instance
+  private static API_BASE_URL: string = 'http://127.0.0.1:5000'; // local test 
+  // private static API_BASE_URL: string = 'http://13.215.47.20:5000'; // aws instance
 
   static async loginWithGoogle(token : string): Promise<any> {
     try{

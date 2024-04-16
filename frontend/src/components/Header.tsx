@@ -3,13 +3,16 @@ import { AppBar, Toolbar, Typography, Avatar, Grid, IconButton } from '@mui/mate
 import { useNavigate } from 'react-router-dom'; 
 import HomeIcon from '@mui/icons-material/Home';
 
-interface HeaderProps {
-  username: string;
-  avatarSrc: string; // URL to the user's avatar image
-}
+import { useUser } from '../UserContext';
 
-const Header: React.FC<HeaderProps> = ({ username, avatarSrc }) => {
+const Header: React.FC = () => {
   const navigate = useNavigate();
+  const {user} = useUser()
+
+  if (!user) {
+    return <div>No user data available</div>;
+  }
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -25,10 +28,10 @@ const Header: React.FC<HeaderProps> = ({ username, avatarSrc }) => {
           <Grid item>
             <Grid container alignItems="center" spacing={1}>
               <Grid item>
-                <Avatar alt="User Avatar" src={avatarSrc} />
+                <Avatar alt="User Avatar" src={user.picture} />
               </Grid>
               <Grid item>
-                <Typography variant="subtitle1">{username}</Typography>
+                <Typography variant="subtitle1">{user.name}</Typography>
               </Grid>
             </Grid>
           </Grid>

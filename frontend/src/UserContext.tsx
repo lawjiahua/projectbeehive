@@ -4,6 +4,15 @@ import { User } from './models/User'
 interface UserContextType {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
+    isLoggedIn: boolean;
+    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const initialUserContext: UserContextType = {
+    isLoggedIn: false,
+    user: null,
+    setIsLoggedIn: () => {},  // Provide noop functions as placeholders
+    setUser: () => {},
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -22,9 +31,10 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initialUserContext.isLoggedIn);
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn }}>
             {children}
         </UserContext.Provider>
     );

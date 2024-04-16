@@ -9,6 +9,7 @@ const LoginPage: React.FC = () => {
 
   const handleLoginSuccess = async(response : any) => {
     try{
+      console.log(response)
       const token = response?.credential;
       const data = await ApiService.loginWithGoogle(token);
       if(data.jwt){
