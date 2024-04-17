@@ -35,7 +35,7 @@ def google_login():
     print(current_app.secret_key)
     if user_info.get('aud') == current_app.config['GOOGLE_CLIENT_ID']:
 
-        users_collection = get_db('user')
+        users_collection = get_db('users')
         # check for existing user and issue token 
         existing_user = users_collection.find_one({"email":user_info['email']})
         if existing_user is None:
@@ -46,8 +46,8 @@ def google_login():
                 "beehives": ["beehive1"],
                 "picture": user_info['picture']
             }
-        insert_result = users_collection.insert_one(user_document) 
-        print(f"Document inserted with ID: {insert_result.inserted_id}")
+            insert_result = users_collection.insert_one(user_document) 
+            print(f"Document inserted with ID: {insert_result.inserted_id}")
 
         # Token is valid. Create a session or JWT for the user
         user_jwt = jwt.encode({'email': user_info['email']}, current_app.secret_key , algorithm='HS256')
@@ -68,7 +68,7 @@ def user_info():
         payload = jwt.decode(token, current_app.secret_key, algorithms=['HS256'])
         user_email = payload['email']  
 
-        users_collection = user_service.get_user_collection()
+        users_collection = get_db('user')
         user_details = users_collection.find_one({"email": user_email}, {'_id': 0})  # Exclude the MongoDB ID from the results
         
         if user_details:

@@ -9,18 +9,21 @@ import BeehivePage from './pages/BeehivePage';
 import ApiService from './services/ApiService';
 
 const AuthHandler: React.FC = () => {
-  const { setUser, setIsLoggedIn } = useUser();
+  const { setUser, setIsLoggedIn, token, setToken } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('loginToken');
+    console.log("updating auth handler")
     if (!token) {
       navigate('/login');
     } else {
       ApiService.fetchUserInfo(token)
         .then(data => {
+          console.log("received user data!")
+          console.log(data)
           setUser(data);
           setIsLoggedIn(true)
+          navigate("/")
         })
         .catch(error => {
           console.error("Failed to fetch user info:", error);
@@ -30,7 +33,7 @@ const AuthHandler: React.FC = () => {
           }
         });
     }
-  }, [setUser, navigate]);
+  }, [token, setUser, setIsLoggedIn, navigate, setToken]);
 
   return null; // This component does not render anything
 };

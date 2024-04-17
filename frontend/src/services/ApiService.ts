@@ -18,7 +18,6 @@ class ApiService {
       });
       if(response.ok){
         const data = await response.json();
-        console.log("TOKEN FROM BACKEND  \n" + data);
         return data;
       } else {
         throw new Error('Something went wrong with the login. Check server logs')
@@ -32,10 +31,11 @@ class ApiService {
   // Method to fetch user information
   static async fetchUserInfo(token : string): Promise<User> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/user_info`, {
+      const response = await fetch(`${this.API_BASE_URL}/auth/user_info`, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${token}`, // Correctly interpolate the token into the header
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Correctly interpolate the token into the header
         },
       });
 

@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 
 import ApiService from '../services/ApiService';
+import { useUser } from '../UserContext';
 
 const LoginPage: React.FC = () => {
+  const {setToken} = useUser()
 
   const handleLoginSuccess = async(response : any) => {
     try{
@@ -13,7 +15,7 @@ const LoginPage: React.FC = () => {
       const token = response?.credential;
       const data = await ApiService.loginWithGoogle(token);
       if(data.jwt){
-        localStorage.setItem('loginToken', data.jwt);
+        setToken(data.jwt)
         console.log("Token received")
       }else{
         console.log("Token not received")

@@ -6,13 +6,17 @@ interface UserContextType {
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     isLoggedIn: boolean;
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+    token: string | null
+    setToken: React.Dispatch<React.SetStateAction<string | null>>  
 }
 
 const initialUserContext: UserContextType = {
     isLoggedIn: false,
     user: null,
+    token: '',
     setIsLoggedIn: () => {},  // Provide noop functions as placeholders
     setUser: () => {},
+    setToken: () => {}
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,10 +35,11 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(initialUserContext.token);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initialUserContext.isLoggedIn);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn }}>
+        <UserContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn, token, setToken }}>
             {children}
         </UserContext.Provider>
     );
