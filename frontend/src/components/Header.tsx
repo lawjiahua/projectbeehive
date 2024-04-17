@@ -1,5 +1,5 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Avatar, Grid, IconButton } from '@mui/material';
+import React, {useState} from 'react';
+import { AppBar, Toolbar, Grid, IconButton, Typography, Avatar, Menu, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; 
 import HomeIcon from '@mui/icons-material/Home';
 
@@ -7,7 +7,28 @@ import { useUser } from '../UserContext';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {user} = useUser()
+
+  const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  
+  const handleLogout = () => {
+    // Implement logout functionality
+    console.log('Logging out');
+    handleClose();
+  };
+
+  const handleProfile = () => {
+    // Navigate to profile page
+    navigate('/profile');
+    handleClose();
+  };
 
   if (!user) {
     return <div>No user data available</div>;
@@ -26,14 +47,32 @@ const Header: React.FC = () => {
           </Grid>
           {/* User Info */}
           <Grid item>
-            <Grid container alignItems="center" spacing={1}>
-              <Grid item>
-                <Avatar alt="User Avatar" src={user.picture} />
+            <IconButton onClick={handleMenu} color="inherit">
+              <Grid container alignItems="center" spacing={1}>
+                <Grid item>
+                  <Avatar alt="User Avatar" src={user.picture} />
+                </Grid>
+                <Grid item>
+                  <Typography variant="subtitle1">{user.name}</Typography>
+                </Grid>
               </Grid>
-              <Grid item>
-                <Typography variant="subtitle1">{user.name}</Typography>
-              </Grid>
-            </Grid>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <MenuItem onClick={handleProfile}>Profile</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
           </Grid>
         </Grid>
       </Toolbar>
