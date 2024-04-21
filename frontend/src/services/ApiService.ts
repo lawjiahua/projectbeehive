@@ -1,5 +1,6 @@
 import { Alert } from "../models/Alert";
 import { Beehive } from "../models/Beehive";
+import { BeehiveAlertResponse } from "../models/BeehiveAlertResponse";
 import { IndividalBeehiveResponse } from "../models/IndividualBeehiveResponse";
 import { User } from "../models/User";
 
@@ -50,6 +51,28 @@ class ApiService {
         throw error;
     }
   } 
+
+  static async getBeehiveAlerts(beehiveNames: string[]): Promise<BeehiveAlertResponse> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/alert/beehiveAlerts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ beehives: beehiveNames }),
+      });
+      if(response.ok) {
+        const alerts = await response.json();
+        return alerts;
+      } else {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error || 'Unknown error occurred while fetching beehive alerts');
+      }
+    } catch(error) {
+      console.error("Error fetching beehive alerts", error);
+      throw error;
+    }
+  }
 
   // Example method to fetch user beehives
   public static async fetchUserBeehives(): Promise<any> {

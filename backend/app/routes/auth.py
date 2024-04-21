@@ -68,7 +68,7 @@ def user_info():
         payload = jwt.decode(token, current_app.secret_key, algorithms=['HS256'])
         user_email = payload['email']  
 
-        users_collection = get_db('user')
+        users_collection = get_db('users')
         user_details = users_collection.find_one({"email": user_email}, {'_id': 0})  # Exclude the MongoDB ID from the results
         
         if user_details:

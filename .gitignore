@@ -1,5 +1,5 @@
 # key specific ignores
-/dataprocessing
+/dataProcessing
 /backend/app/serviceAccountKey.json
 
 # Python-specific ignores

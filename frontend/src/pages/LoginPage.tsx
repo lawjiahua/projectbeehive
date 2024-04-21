@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google'; 
@@ -7,7 +7,14 @@ import ApiService from '../services/ApiService';
 import { useUser } from '../UserContext';
 
 const LoginPage: React.FC = () => {
-  const {setToken} = useUser()
+  const {setToken, setUser, setIsLoggedIn, isLoggedIn} = useUser()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if(isLoggedIn){
+      navigate("/")
+    }
+  }, [])
 
   const handleLoginSuccess = async(response : any) => {
     try{
@@ -16,6 +23,19 @@ const LoginPage: React.FC = () => {
       const data = await ApiService.loginWithGoogle(token);
       if(data.jwt){
         setToken(data.jwt)
+        ApiService.fetchUserInfo(data.jwt)
+          .then(data => {
+            setUser(data);
+            setIsLoggedIn(true);
+            navigate("/")
+          })
+          .catch(error => {
+            console.error("Failed to fetch user info:", error);
+            if (error.message.includes('401')) {
+                navigate('/login');
+            }
+          });
+
         console.log("Token received")
       }else{
         console.log("Token not received")

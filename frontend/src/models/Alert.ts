@@ -1,5 +1,7 @@
 export interface Alert {
-  message: string;
-  lastUpdate: Date; // Assuming ISO string format for simplicity
-  timeSinceStart: Date; // Assuming ISO string format for simplicity
+  alert_type: string;
+  timestamp: Date; // Assuming ISO string format for simplicity
+  fileName: string;
+  fileId: string;
+  beehive: string;
 }

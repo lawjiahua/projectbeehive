@@ -1,82 +1,47 @@
-import React, {useEffect, useState} from 'react';
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
-import { Alert } from '../models/Alert';
-import { Beehive } from '../models/Beehive';
-import { formatDistanceToNow } from 'date-fns';
+import React, {  useEffect, useState } from 'react';
+import { useUser } from '../UserContext';
+import ApiService from '../services/ApiService'; // Adjust the import path as necessary
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { Link } from 'react-router-dom';
-import ApiService from '../services/ApiService';
 
-interface HomePageProps {
-  alerts: Alert[];
-  beehives: Beehive[];
-}
+import { BeehiveAlertResponse } from '../models/BeehiveAlertResponse';
 
-const HomePage: React.FC = () => {
-  const [beehives, setBeehives] = useState<Beehive[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+const BeehiveDashboard = () => {
+  const { user } = useUser();
+  const [alerts, setAlerts] = useState<BeehiveAlertResponse>({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const beehiveData = await ApiService.fetchAllBeehives();
-        setBeehives(beehiveData);
-        const alertData = await ApiService.fetchAllAlerts();
-        setAlerts(alertData);
-      } catch (error) {
-        console.error("Failed to fetch beehives:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+    if (user && user.beehives) {
+      ApiService.getBeehiveAlerts(user.beehives)
+        .then(setAlerts)
+        .catch(console.error); // Handle errors more gracefully in production
+    }
+  }, [user]);
 
   return (
-    <div style={{ padding: '20px' }}>
-      {/* Alerts Section */}
-      <Typography variant="h6" style={{ marginBottom: '10px' }}>Alerts</Typography>
-      <TableContainer component={Paper} style={{ maxHeight: 200, overflow: 'auto' }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Message</TableCell>
-              <TableCell>Last Update</TableCell>
-              {/* <TableCell>Time Since Start</TableCell> */}
+    <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Beehive Name</TableCell>
+            <TableCell>Alert</TableCell>
+            <TableCell>Timestamp</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {Object.entries(alerts).map(([name, alert]) => (
+            <TableRow key={name}>
+              <TableCell component="th" scope="row">
+                <Link to={`/${name}`}>{name}</Link>
+              </TableCell>
+              <TableCell>{alert ? alert.alert_type : 'No alert'}</TableCell>
+              <TableCell>{alert ? new Date(alert.timestamp).toLocaleString() : 'No timestamp available'}</TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {alerts.map((alert, index) => (
-              <TableRow key={index}>
-                <TableCell>{alert.message}</TableCell>
-                <TableCell>{formatDistanceToNow(alert.lastUpdate)}</TableCell>
-                {/* <TableCell>{formatDistanceToNow(alert.timeSinceStart)}</TableCell> */}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {/* Beehives Section */}
-      <Typography variant="h6" style={{ marginTop: '20px', marginBottom: '10px' }}>Beehives</Typography>
-      <TableContainer component={Paper} style={{ maxHeight: 200, overflow: 'auto' }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Last Update</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {beehives.map((beehive, index) => (
-              <TableRow key={index}>
-                <TableCell><Link to={`/beehive/${beehive.name}`}>{beehive.name}</Link></TableCell>
-                <TableCell>{formatDistanceToNow(new Date(beehive.lastUpdate), { addSuffix: true })}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
-export default HomePage;
+export default BeehiveDashboard;
