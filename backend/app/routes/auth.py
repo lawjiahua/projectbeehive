@@ -43,7 +43,7 @@ def google_login():
                 "email": user_info['email'],
                 "name": user_info['name'],
                 "roles": ["admin"],
-                "beehives": ["beehive1"],
+                "beehives": ["beehive1", "beehive2"],
                 "picture": user_info['picture']
             }
             insert_result = users_collection.insert_one(user_document) 
@@ -86,9 +86,4 @@ def user_info():
         print(e)
         return jsonify({'message': 'An error occurred'}), 500
 
-@auth_bp.route('/logout')
-def logout():
-    response = make_response('You are logged out.')
-    # Set the cookie to expire in the past
-    response.set_cookie('session_id', '', expires=0)
-    return response
+

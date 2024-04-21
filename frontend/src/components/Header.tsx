@@ -8,7 +8,7 @@ import { useUser } from '../UserContext';
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const {user} = useUser()
+  const {user, setToken, setIsLoggedIn, setUser} = useUser()
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -19,9 +19,12 @@ const Header: React.FC = () => {
   };
   
   const handleLogout = () => {
-    // Implement logout functionality
     console.log('Logging out');
+    setUser(null);
+    setToken(null);
+    setIsLoggedIn(false);
     handleClose();
+    navigate("/login")
   };
 
   const handleProfile = () => {

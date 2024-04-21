@@ -1,5 +1,6 @@
 # key specific ignores
 /dataprocessing
+/backend/app/serviceAccountKey.json
 
 # Python-specific ignores
 /backend/__pycache__/

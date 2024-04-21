@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google'; 
 
 import ApiService from '../services/ApiService';
 import { useUser } from '../UserContext';
@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
         {/* App Logo */}
         <Box
           component="img"
-          src="../../../public/beekeeperLogo.png" // Replace with your logo path
+          src="/beekeeperLogo.png" // Replace with your logo path
           alt="App Logo"
           sx={{ width: 120, height: 120 }} // Adjust size as needed
         />

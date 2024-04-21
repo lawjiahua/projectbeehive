@@ -13,14 +13,12 @@ def weights_past_week():
     one_week_ago = datetime.now(pytz.utc) - timedelta(days=7)
 
     # Get the database collection
-    weights_collection = get_db('weight')
+    weights_collection = get_db('weightTest')
     weights = list(weights_collection.find({}))
 
     # Process the weights to be JSON serializable
     processed_weights = []
     for weight in weights:
-        # Convert MongoDB's ObjectId to string if necessary
-        weight['_id'] = str(weight['_id'])
         # Ensure timestamp is in a serializable format
         weight['timestamp'] = weight['timestamp'].isoformat() if weight.get('timestamp') else None
         processed_weights.append(weight)
@@ -31,7 +29,7 @@ def weights_past_week():
 @weight_bp.route('/<beehive_name>')
 def weights_for_beehive(beehive_name):
     # Get the database collection
-    weights_collection = get_db('weight')
+    weights_collection = get_db('weightTest')
 
     # Query to find weights for the specified beehive
     query = {
@@ -42,8 +40,9 @@ def weights_for_beehive(beehive_name):
     # Process the weights to be JSON serializable
     processed_weights = []
     for weight in weights:
-        # Convert MongoDB's ObjectId to string if necessary
-        weight['_id'] = str(weight['_id'])
+        # Convert ObjectId to string
+        if '_id' in weight:
+            weight['_id'] = str(weight['_id'])
         # Ensure timestamp is in a serializable format
         weight['timestamp'] = weight['timestamp'].isoformat() if weight.get('timestamp') else None
         processed_weights.append(weight)
