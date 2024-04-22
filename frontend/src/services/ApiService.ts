@@ -54,7 +54,7 @@ class ApiService {
 
   static async getBeehiveAlerts(beehiveNames: string[]): Promise<BeehiveAlertResponse> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/alert/beehiveAlerts`, {
+      const response = await fetch(`${this.API_BASE_URL}/alert/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,59 +74,22 @@ class ApiService {
     }
   }
 
-  // Example method to fetch user beehives
-  public static async fetchUserBeehives(): Promise<any> {
-    const response = await fetch(`${this.API_BASE_URL}/user_beehives`, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+  static async getOutstandingAlerts(beehiveName: string): Promise<Alert[]> {
+    try {
+        const response = await fetch(`${this.API_BASE_URL}/alert/getAlertByBeehive/${beehiveName}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const alerts: Alert[] = await response.json();
+        return alerts;
+    } catch (error) {
+        console.error('Error fetching alerts:', error);
+        throw error;  // Re-throw to let the caller handle it
     }
-    return response.json();
-  }
-
-  public static async fetchAllBeehives(): Promise<Beehive[]> {
-    const response = await fetch(`${this.API_BASE_URL}/beehives`, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  }
-
-  public static async fetchAllAlerts(): Promise<Alert[]> {
-      const response = await fetch(`${this.API_BASE_URL}/alerts`, {
-        method: 'GET',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-  }
-
-  public static async fetchIndividualBeehiveData(beehiveName: string): Promise<IndividalBeehiveResponse> {
-    const response = await fetch(`${this.API_BASE_URL}/individualBeehiveData/${beehiveName}`, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  }
-
-  public static async fetchBeehiveData(beehiveName: string, startDate: string, endDate: string): Promise<any> {
-    const response = await fetch(`${this.API_BASE_URL}/${encodeURIComponent(beehiveName)}?start_date=${startDate}&end_date=${endDate}`, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  }
+  };  
   
-    // Add more methods as needed for other endpoints
-  }
-  
-  export default ApiService;
+
+}
+
+export default ApiService;
   

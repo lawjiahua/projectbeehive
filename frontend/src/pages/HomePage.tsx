@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { Link } from 'react-router-dom';
 
 import { BeehiveAlertResponse } from '../models/BeehiveAlertResponse';
+import './Pages.css';
 
 const BeehiveDashboard = () => {
   const { user } = useUser();
@@ -24,18 +25,22 @@ const BeehiveDashboard = () => {
         <TableHead>
           <TableRow>
             <TableCell>Beehive Name</TableCell>
-            <TableCell>Alert</TableCell>
-            <TableCell>Timestamp</TableCell>
+            <TableCell>Alerts</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.entries(alerts).map(([name, alert]) => (
+          {Object.entries(alerts).map(([name, alertCount]) => (
             <TableRow key={name}>
               <TableCell component="th" scope="row">
                 <Link to={`/${name}`}>{name}</Link>
               </TableCell>
-              <TableCell>{alert ? alert.alert_type : 'No alert'}</TableCell>
-              <TableCell>{alert ? new Date(alert.timestamp).toLocaleString() : 'No timestamp available'}</TableCell>
+              <TableCell>
+                {alertCount > 0 ? (
+                  <span className="alertCount">{alertCount}</span>
+                ) : (
+                  <span className="goodCondition">Beehive in good condition</span>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

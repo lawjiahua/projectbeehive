@@ -1,7 +1,9 @@
 export interface Alert {
   alert_type: string;
-  timestamp: Date; // Assuming ISO string format for simplicity
-  fileName: string;
-  fileId: string;
+  date: Date; 
+  fileId: string | null;
   beehive: string;
+  message: string;
+  status: string;
+  id: string;
 }

@@ -1,0 +1,14 @@
+/* BeehiveAlertTable.css */
+.alertCount {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 0.5em;
+    min-width: 25px;
+    text-align: center;
+    display: inline-block;
+}
+
+.goodCondition {
+    color: green;
+}
