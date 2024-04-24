@@ -1,8 +1,9 @@
-import { Alert } from "../models/Alert";
+import { AlertData } from "../models/Alert";
 import { Beehive } from "../models/Beehive";
 import { BeehiveAlertResponse } from "../models/BeehiveAlertResponse";
 import { IndividalBeehiveResponse } from "../models/IndividualBeehiveResponse";
 import { User } from "../models/User";
+import { WeightDataPoint } from "../models/WeightDataPoint";
 
 class ApiService {
   private static API_BASE_URL: string = 'http://127.0.0.1:5000'; // local test 
@@ -74,20 +75,65 @@ class ApiService {
     }
   }
 
-  static async getOutstandingAlerts(beehiveName: string): Promise<Alert[]> {
+  static async getOutstandingAlerts(beehiveName: string): Promise<AlertData[]> {
     try {
         const response = await fetch(`${this.API_BASE_URL}/alert/getAlertByBeehive/${beehiveName}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        const alerts: Alert[] = await response.json();
+        const alerts: AlertData[] = await response.json();
         return alerts;
     } catch (error) {
         console.error('Error fetching alerts:', error);
         throw error;  // Re-throw to let the caller handle it
     }
-  };  
+  };
   
+
+  static async fetchWeightsForBeehive(beehiveName: string): Promise<WeightDataPoint[]> {
+    try {
+        const response = await fetch(`${this.API_BASE_URL}/weight/${beehiveName}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json() as WeightDataPoint[];
+        return data;
+    } catch (error) {
+        console.error('Error fetching weights:', error);
+        throw error;  // Re-throw to let the caller handle it
+    }
+  };
+
+  static async fetchAlertsForBeehiveFunction(beehiveName: string, functionDetail: string): Promise<any[]> {
+    try{
+
+      const response = await fetch(`${this.API_BASE_URL}/alert/getAlertByBeehive/${beehiveName}/${functionDetail}`);
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error('Error fetching weights:', error);
+      throw error; 
+    }
+  };
+  
+  static async resolveAlert(alertId: string): Promise<void> {
+    
+    const response = await fetch(`${this.API_BASE_URL}/alert/updateAlert/${alertId}`, {
+        method: 'POST', // POST method to update the data
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to resolve the alert');
+    }
+
+    return await response.json(); // Optionally process the response further if needed
+}
 
 }
 

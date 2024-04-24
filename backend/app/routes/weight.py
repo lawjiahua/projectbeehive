@@ -31,9 +31,11 @@ def weights_for_beehive(beehive_name):
     # Get the database collection
     weights_collection = get_db('weightTest')
 
-    # Query to find weights for the specified beehive
+    one_week_ago = datetime.now() - timedelta(days=7)
+    # Query to find weights for the specified beehive in the past week
     query = {
-        "beehive": beehive_name
+        "beehive": beehive_name,
+        "date": {"$gte": one_week_ago}
     }
     weights = list(weights_collection.find(query))
 
@@ -43,8 +45,9 @@ def weights_for_beehive(beehive_name):
         # Convert ObjectId to string
         if '_id' in weight:
             weight['_id'] = str(weight['_id'])
-        # Ensure timestamp is in a serializable format
-        weight['timestamp'] = weight['timestamp'].isoformat() if weight.get('timestamp') else None
+        # Ensure date is in a serializable format
+        if 'date' in weight:
+            weight['date'] = weight['date'].isoformat()
         processed_weights.append(weight)
 
     return jsonify(processed_weights)

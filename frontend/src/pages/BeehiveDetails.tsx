@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 
 import ApiService from '../services/ApiService';
 import { Api, ApiOutlined } from '@mui/icons-material';
-import { Alert } from '../models/Alert';
+import { AlertData } from '../models/Alert';
 
 interface MonitoringItem {
   function: string;
@@ -51,7 +51,11 @@ const BeehiveDetails: React.FC = () => {
           <TableBody>
             {monitoringItems.map((alert, index) => (
               <TableRow key={index}>
-                <TableCell>{alert.function}</TableCell>
+                <TableCell>
+                  <Link to={`/${beehiveName}/${encodeURIComponent(alert.function)}`}>
+                    {alert.function}
+                  </Link>
+                </TableCell>
                 <TableCell>{alert.status}</TableCell>
                 <TableCell>{alert.timestamp}</TableCell>
               </TableRow>
@@ -72,7 +76,7 @@ const BeehiveDetails: React.FC = () => {
   );
 };
 
-const mapAlertsToMonitoringFunctions = (alerts: Alert[]): MonitoringItem[] => {
+const mapAlertsToMonitoringFunctions = (alerts: AlertData[]): MonitoringItem[] => {
   const functionMappings = {
       'low honey production': 'Honey Production',
       'sound anomaly': 'Anomaly Detection',

@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from './UserContext';
+
 import Header from './components/Header';
 import HomePage from './pages/HomePage'; // Assuming you have a HomePage component
 import LoginPage from './pages/LoginPage'; // Assuming you have a LoginPage component
-
 import ApiService from './services/ApiService';
 import BeehiveDetails from './pages/BeehiveDetails';
 import ProtectedRoute from './ProtectedRoute';
+import FunctionDetails from './pages/FunctionDetails';
 
 const App: React.FC = () => {
   const {isLoggedIn} = useUser()
@@ -25,6 +26,11 @@ const App: React.FC = () => {
           <Route path="/:beehiveName" element={
             <ProtectedRoute>
               <BeehiveDetails />
+            </ProtectedRoute>
+          } />
+          <Route path="/:beehiveName/:functionName" element={
+            <ProtectedRoute>
+              <FunctionDetails />
             </ProtectedRoute>
           } />
         </Routes>

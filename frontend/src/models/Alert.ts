@@ -1,9 +1,9 @@
-export interface Alert {
+export interface AlertData {
   alert_type: string;
   date: Date; 
   fileId: string | null;
   beehive: string;
   message: string;
   status: string;
-  id: string;
+  _id: string;
 }

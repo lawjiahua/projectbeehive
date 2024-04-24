@@ -70,3 +70,45 @@ def get_outstanding_alerts(beehive_name):
             alert['date'] = alert['date'].isoformat()
 
     return jsonify(alerts), 200
+
+@alert_bp.route('/getAlertByBeehive/<beehive_name>/<function_detail>', methods=['GET'])
+def get_alerts_by_function(beehive_name, function_detail):
+    
+    print(function_detail)
+    
+    query = {
+        "beehive": beehive_name,
+        "alert_type": get_alert_code(function_detail), 
+        "status": "active"
+    }
+
+    alerts_collection = get_db('alert')
+    alerts = list(alerts_collection.find(
+        query,
+        {"_id": 1, "date": 1, "alert_type": 1, "message": 1, "status": 1, "fileId": 1}
+    ))
+
+    # Convert dates to ISO format for JSON serialization
+    for alert in alerts:
+        alert['_id'] = str(alert['_id'])
+        if 'date' in alert:
+            alert['date'] = alert['date'].isoformat()
+
+    return jsonify(alerts), 200
+
+def get_alert_code(function_name):
+    # Mapping of function names to alert codes in a Python dictionary
+    function_mappings = {
+        'Honey Production': 'low honey production',
+        'Anomaly Detection': 'sound anomaly',
+        'Comfort of Hive': 'comfort',
+        'Environment Monitoring': 'environment',
+        'Availability of Nectar': 'nectar'
+    }
+
+    # Return the alert code for the given function name
+    alert_code = function_mappings.get(function_name)
+    if alert_code:
+        return alert_code
+    else:
+        raise ValueError("Invalid function name provided")
