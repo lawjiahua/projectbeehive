@@ -2,6 +2,7 @@ import { AlertData } from "../models/Alert";
 import { Beehive } from "../models/Beehive";
 import { BeehiveAlertResponse } from "../models/BeehiveAlertResponse";
 import { IndividalBeehiveResponse } from "../models/IndividualBeehiveResponse";
+import { SoundData } from "../models/SoundData";
 import { User } from "../models/User";
 import { WeightDataPoint } from "../models/WeightDataPoint";
 
@@ -133,7 +134,16 @@ class ApiService {
     }
 
     return await response.json(); // Optionally process the response further if needed
-}
+  }
+
+  static async fetchSoundData(fileId: string): Promise<SoundData[]> {
+    const response = await fetch(`${this.API_BASE_URL}/sound/${fileId}`);
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data: SoundData[] = await response.json();
+    return data;
+  } 
 
 }
 

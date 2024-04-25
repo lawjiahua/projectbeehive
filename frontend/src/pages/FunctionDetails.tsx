@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
-// Import other components once they are uncommented and used
+// Import other components onc   e they are uncommented and used
 import HoneyProductionComponent from '../components/HoneyProductionComponent';
+import AnomalyDetectionComponent from '../components/AnomalyDetectionComponent';
 
 interface FunctionComponentMap {
     [key: string]: React.ComponentType<any> | undefined;
@@ -19,7 +20,7 @@ const FunctionDetails = () => {
   // Component mapping with type annotation
   const functionComponents: FunctionComponentMap = {
     'Honey Production': HoneyProductionComponent,
-    // 'Anomaly Detection': AnomalyDetectionComponent,
+    'Anomaly Detection': AnomalyDetectionComponent,
     // 'Availability of Nectar': NectarAvailabilityComponent,
     // 'Environment Monitoring': EnvironmentMonitoringComponent,
     // 'Comfort of Hive': ComfortOfHiveComponent

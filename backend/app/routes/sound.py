@@ -61,7 +61,7 @@ def get_sound_file(fileId):
     
     # Process the sound file
     fh.seek(0)  # Move to the beginning of the file handle
-    y, sr = librosa.load(fh, sr=None)  # load the file as a waveform
+    y, sr = librosa.load(fh, sr=100)  # load the file as a waveform
     times = np.linspace(0, len(y)/sr, num=len(y))  # create an array of time values
     
     # Prepare data for plotting
