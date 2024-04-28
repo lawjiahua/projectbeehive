@@ -58,7 +58,7 @@ const HoneyProductionComponent: React.FC<HoneyProductionProps> = ({ beehiveName,
         vAxis: { title: 'Gain (kg)' },
         series: {
             0: { color: '#e2431e' },  // Actual Gain
-            1: { color: '#f1ca3a' }   // Projected Gain
+            1: { color: '#0a4fcf' }   // Projected Gain
         },
         legend: { position: 'bottom' }
     };
@@ -86,16 +86,16 @@ const HoneyProductionComponent: React.FC<HoneyProductionProps> = ({ beehiveName,
                 ) : (
                     <Alert severity="success" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <CheckCircleIcon sx={{ mr: 2 }} />
-                        <Typography variant="body1">Function detail is good</Typography>
+                        <Typography variant="body1">Honey production levels are normal.</Typography>
                     </Alert>
                 )}
 
                 <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-                    <Typography variant="h6">Gain Comparison Graph</Typography>
+                    <Typography variant="h6">Actual gain / Projected gain graph</Typography>
                     <Chart
                         chartType="LineChart"
                         width="100%"
-                        height="400px"
+                        height="200px"
                         data={[['Date', 'Actual Gain', 'Projected Gain'], ...weights]}
                         options={options}
                     />

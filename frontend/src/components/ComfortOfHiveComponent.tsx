@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Paper, Alert, Button, CircularProgress } from '@mui/material';
+import { Container, Typography, Box, Paper, Alert, Button, CircularProgress, Grid } from '@mui/material';
 import { Chart } from 'react-google-charts';
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -8,6 +8,9 @@ import { formatRelative, parseISO } from 'date-fns'
 import { AlertData } from '../models/Alert';
 import ApiService from '../services/ApiService';  
 import { SoundData } from '../models/SoundData';
+import { HumidityDataPoint } from '../models/HumidityDataPoint';
+import { HumidityResponse } from '../models/HumidityResponse';
+import { TemperatureResponse } from '../models/TemperatureResponse';
 
 interface AnomalyDetectionProps {
     beehiveName: string;
@@ -15,27 +18,30 @@ interface AnomalyDetectionProps {
 }
 
 
-const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveName, setLoading }) => {
+const ComfortOfHiveComponent: React.FC<AnomalyDetectionProps> = ({ beehiveName, setLoading }) => {
     const [alert, setAlert] = useState<AlertData | null>(null);
     const [chartData, setChartData] = useState<Array<Array<number | string>>>([['Time', 'Amplitude']]);
-    const [loadingChart, setLoadingChart] = useState<boolean>(true) 
-    const [normalSoundId, setNormalSoundId] = useState<string>('1N8nfzTjmToiYRIFFCnGn9pZFwuTvxvmh')
+    const [humidityReading, setHumidityReading] = useState<number>(70.0)
+    const [temperatureReading, setTemperatureReading] = useState<number>(30.0)
+    const [loadingChart, setLoadingChart] = useState<boolean>(true)
+    const [normalSoundId, setNormalSoundId] = useState<string>('10Eko1qj0oAorS52ATiXtq1D2MBVJxSbM')
     const [normalChartData, setNormalChartData] = useState<Array<Array<number | string>>>([['Time', 'Amplitude']]);
 
     useEffect(() => {
         setLoading(true);
-        ApiService.fetchAlertsForBeehiveFunction(beehiveName, 'Anomaly Detection').then((alertsData) => {
+        ApiService.fetchAlertsForBeehiveFunction(beehiveName, 'Comfort of Hive').then((alertsData) => {
             const activeAlert = alertsData.find(alert => alert.status === 'active');
             setAlert(activeAlert);
             if (activeAlert?.fileId) {
                 ApiService.fetchSoundData(activeAlert.fileId).then((soundFileData: SoundData[]) => {
                     const formattedData: Array<Array<number | string>> = [['Time', 'Amplitude'], ...soundFileData.map(item => [item.Time, item.Amplitude])];
-                    setLoading(false);
+                    setLoading(false)
                     setChartData(formattedData);
-                    setLoadingChart(false)
+                    setLoadingChart(false);
                 }).catch(error => {
+                    setLoading(false)
                     console.error("Failed to load sound data:", error);
-                    setLoading(false);
+                    setLoadingChart(false);
                 });
             } else {
                 ApiService.fetchSoundData(normalSoundId).then((soundFileData: SoundData[]) => {
@@ -44,10 +50,26 @@ const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveNam
                     setNormalChartData(formattedData);
                     setLoadingChart(false);
                 }).catch(error => {
+                    setLoading(false)
                     console.error("Failed to load sound data:", error);
                     setLoadingChart(false);
                 });
             }
+
+            ApiService.getHumidityStatus(beehiveName).then((humidityResponse : HumidityResponse) => {
+                if(humidityResponse.data){
+                    setHumidityReading(humidityResponse.data.reading);
+                }
+
+                ApiService.getTemperatureStatus(beehiveName).then((temperatureResponse: TemperatureResponse) => {
+                    if(temperatureResponse.data){
+                        setTemperatureReading(temperatureResponse.data.reading);
+                        setLoading(false);
+                    }
+                })
+            })
+
+
         }).catch(error => {
             console.error("Failed to load alerts:", error);
             setLoading(false);
@@ -60,6 +82,16 @@ const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveNam
             setAlert(null);
         } catch (error) {
             console.error("Error resolving alert:", error);
+        }
+    };
+
+    const determineStatus = (value: number, highThreshold: number, lowThreshold: number) => {
+        if (value >= highThreshold) {
+            return { text: 'High', color: 'red' };
+        } else if (value <= lowThreshold) {
+            return { text: 'Low', color: 'red' };
+        } else {
+            return { text: 'Normal', color: 'green' };
         }
     };
 
@@ -120,7 +152,7 @@ const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveNam
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh' }}> {/* Added styles */}
                 <Box sx={{ my: 4 }}>
                 <Typography variant="h4" gutterBottom>
-                    Anomaly Detection Details for {beehiveName}
+                    Environment Monitoring Details for {beehiveName}
                 </Typography>
 
                 {alert ? (
@@ -139,27 +171,51 @@ const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveNam
                 ) : (
                     <Alert severity="success" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <CheckCircleIcon sx={{ mr: 2 }} />
-                    <Typography variant="body1">No anomaly detected. Bees are good</Typography>
+                    <Typography variant="body1">No anomaly detected. Bees are in good condition.</Typography>
                     </Alert>
                 )}
 
+                <Grid container spacing={2} sx={{ my: 2 }}>
+                    <Grid item xs={6}>
+                        <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+                            <Typography variant="h6">Temperature:</Typography>
+                            <Box sx={{ color: temperatureReading ? determineStatus(temperatureReading, 30, 15).color : 'inherit' }}>
+                                <Typography variant="h5">
+                                    {temperatureReading ? determineStatus(temperatureReading, 30, 15).text : 'Loading...'}
+                                </Typography>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+                            <Typography variant="h6">Humidity:</Typography>
+                            <Box sx={{ color: humidityReading ? determineStatus(humidityReading, 80, 20).color : 'inherit' }}>
+                                <Typography variant="h5">
+                                    {humidityReading ? determineStatus(humidityReading, 80, 20).text : 'Loading...'}
+                                </Typography>
+                            </Box>
+                        </Paper>
+                        
+                    </Grid>
+                </Grid>
+
                 {alert && chartData.length > 0 && (
                     <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-                    <Typography variant="h6">Sound Data Plot</Typography>
-                    {/* Implementation of sound data plotting will depend on the format of soundData */}
-                    {loadingChart? (
-                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-                            <CircularProgress />
-                        </Box>
-                    ) : (
-                        <Chart
-                            chartType="LineChart"
-                            width="100%"
-                            height="400px"
-                            data={chartData}
-                            options={options}
-                        />
-                    )}
+                        <Typography variant="h6">Sound Data Plot</Typography>
+                        {/* Implementation of sound data plotting will depend on the format of soundData */}
+                        {loadingChart? (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <Chart
+                                chartType="LineChart"
+                                width="100%"
+                                height="400px"
+                                data={chartData}
+                                options={options}
+                            />
+                        )}
                     </Paper>
                 )}
 
@@ -167,18 +223,19 @@ const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveNam
                     <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
                         <Typography variant="h6">Sound Data Plot</Typography>
                         {/* Implementation of sound data plotting will depend on the format of soundData */}
-                        {loadingChart && (
+                        {loadingChart? (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-                            <CircularProgress />
+                                <CircularProgress />
                             </Box>
+                        ) : (
+                            <Chart
+                                chartType="LineChart"
+                                width="100%"
+                                height="400px"
+                                data={normalChartData}
+                                options={normalSoundChartOptions}
+                            />
                         )}
-                        <Chart
-                            chartType="LineChart"
-                            width="100%"
-                            height="400px"
-                            data={normalChartData}
-                            options={normalSoundChartOptions}
-                        />
                     </Paper>
                 )}
                 </Box>
@@ -187,4 +244,4 @@ const AnomalyDetectionComponent: React.FC<AnomalyDetectionProps> = ({ beehiveNam
     );
 };
 
-export default AnomalyDetectionComponent;
+export default ComfortOfHiveComponent;

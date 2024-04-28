@@ -8,6 +8,8 @@ from app.routes.auth import auth_bp, configure_oauth
 from app.routes.weight import weight_bp
 from app.routes.alert import alert_bp
 from app.routes.sound import sound_bp
+from app.routes.humidity import humidity_bp
+from app.routes.temperature import temperature_bp
 
 # class CustomJSONEncoder(JSONEncoder):
 #     def default(self, obj):
@@ -35,4 +37,6 @@ def create_app():
     app.register_blueprint(weight_bp, url_prefix='/weight')
     app.register_blueprint(alert_bp, url_prefix='/alert')
     app.register_blueprint(sound_bp, url_prefix='/sound')
+    app.register_blueprint(humidity_bp, url_prefix='/humidity')
+    app.register_blueprint(temperature_bp, url_prefix='/temperature')
     return app

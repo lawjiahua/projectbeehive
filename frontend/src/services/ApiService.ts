@@ -1,8 +1,14 @@
 import { AlertData } from "../models/Alert";
 import { Beehive } from "../models/Beehive";
 import { BeehiveAlertResponse } from "../models/BeehiveAlertResponse";
+import { HumidityDataPoint } from "../models/HumidityDataPoint";
+import { HumidityResponse } from "../models/HumidityResponse";
 import { IndividalBeehiveResponse } from "../models/IndividualBeehiveResponse";
+import { NectarDataResponse } from "../models/NectarDataResponse";
+import { NectarPlotPoint } from "../models/NectarPlotPoint";
 import { SoundData } from "../models/SoundData";
+import { TemperatureDataPoint } from "../models/TemperatureDataPoint";
+import { TemperatureResponse } from "../models/TemperatureResponse";
 import { User } from "../models/User";
 import { WeightDataPoint } from "../models/WeightDataPoint";
 
@@ -144,6 +150,57 @@ class ApiService {
     const data: SoundData[] = await response.json();
     return data;
   } 
+
+  static async fetchNectarData(beehive: string, date: string): Promise<NectarDataResponse> {
+    try {
+        const url = `${this.API_BASE_URL}/weight/nectarMonitoring/${encodeURIComponent(beehive)}?date=${encodeURIComponent(date)}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data: NectarPlotPoint[] = await response.json();
+        return { data };
+    } catch (error) {
+        console.error("Error fetching weight data:", error);
+        return { data: [], error: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
+  static async getTemperatureStatus(beehiveName: string): Promise<TemperatureResponse> {
+    const url = `${this.API_BASE_URL}/temperature/${encodeURIComponent(beehiveName)}`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            // Handle non-2xx status codes
+            const errorText = await response.text();
+            return { error: `Failed to fetch temperature: ${errorText}` };
+        }
+        const data: TemperatureDataPoint = await response.json();
+        return { data };
+    } catch (error) {
+        console.error("Error fetching temperature status:", error);
+        return { error: `Network error: ${error}` };
+    }
+  }
+
+  static async getHumidityStatus(beehiveName: string): Promise<HumidityResponse> {
+    const url = `${this.API_BASE_URL}/humidity/${encodeURIComponent(beehiveName)}`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            // Handle non-2xx status codes
+            const errorText = await response.text();
+            return { error: `Failed to fetch temperature: ${errorText}` };
+        }
+        const data: HumidityDataPoint = await response.json();
+        return { data };
+    } catch (error) {
+        console.error("Error fetching temperature status:", error);
+        return { error: `Network error: ${error}` };
+    }
+  }
 
 }
 

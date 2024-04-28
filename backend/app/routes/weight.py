@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from datetime import datetime, timedelta
 import pytz
 
@@ -51,3 +51,54 @@ def weights_for_beehive(beehive_name):
         processed_weights.append(weight)
 
     return jsonify(processed_weights)
+
+@weight_bp.route('/nectarMonitoring/<beehive_name>')
+def get_past_week_nectar_monitoring_readings(beehive_name):
+    # Get the date from the query parameters, use current date if not provided
+    start_date_str = request.args.get('date', None)
+    print('start date string! ' + start_date_str)
+    if start_date_str:
+        try:
+            # Assuming the date is provided in YYYY-MM-DD format
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Please use YYYY-MM-DD.'}), 400
+    else:
+        start_date = datetime.now(pytz.utc)
+
+    one_week_ago = start_date - timedelta(days=7)
+
+    # Query the weight documents
+    weights = list(get_db('weightTest').find({
+        "date": {"$gte": one_week_ago, "$lte": start_date},
+        "beehive": beehive_name,
+        "actualGain": {"$exists": True}  # Ensure actualGain exists
+    }, {
+        "_id": 0, "date": 1, "actualGain": 1, "beehive": 1
+    }))
+
+    # Query the infraredReading documents
+    infrared_readings = list(get_db('infrared').find({
+        "date": {"$gte": one_week_ago, "$lte": start_date},
+        "beehive": beehive_name,
+    }, {
+        "_id": 0, "date": 1, "reading": 1, "beehive": 1
+    }))
+    
+    # Combine data by date and beehive
+    combined_data = []
+    
+    weight_by_date_beehive = {(w['date'].isoformat(), w['beehive']): (w['actualGain'], w['date']) for w in weights}
+    infrared_by_date_beehive = {(ir['date'].isoformat(), ir['beehive']): ir['reading'] for ir in infrared_readings}
+    
+    # Create tuples of combined data
+    for key, (actual_gain, date) in weight_by_date_beehive.items():
+        if key in infrared_by_date_beehive:
+            combined_data.append({
+                'date': date.isoformat(),
+                'actualGain': actual_gain,
+                'infraredReading': infrared_by_date_beehive[key],
+
+            })
+
+    return jsonify(combined_data)

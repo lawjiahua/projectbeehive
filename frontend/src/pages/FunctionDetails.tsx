@@ -4,6 +4,9 @@ import { Box, CircularProgress } from '@mui/material';
 // Import other components onc   e they are uncommented and used
 import HoneyProductionComponent from '../components/HoneyProductionComponent';
 import AnomalyDetectionComponent from '../components/AnomalyDetectionComponent';
+import EnvironmentMonitoringComponent from '../components/EnvironmentMonitoringComponent';
+import ComfortOfHiveComponent from '../components/ComfortOfHiveComponent';
+import NectarAvailabilityComponent from '../components/NectarAvailabilityComponent';
 
 interface FunctionComponentMap {
     [key: string]: React.ComponentType<any> | undefined;
@@ -21,9 +24,9 @@ const FunctionDetails = () => {
   const functionComponents: FunctionComponentMap = {
     'Honey Production': HoneyProductionComponent,
     'Anomaly Detection': AnomalyDetectionComponent,
-    // 'Availability of Nectar': NectarAvailabilityComponent,
-    // 'Environment Monitoring': EnvironmentMonitoringComponent,
-    // 'Comfort of Hive': ComfortOfHiveComponent
+    'Availability of Nectar': NectarAvailabilityComponent,
+    'Environment Monitoring': EnvironmentMonitoringComponent,
+    'Comfort of Hive': ComfortOfHiveComponent
   };
 
   const decodedFunctionName = decodeURIComponent(functionName);
