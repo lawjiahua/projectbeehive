@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { AppBar, Toolbar, Grid, IconButton, Typography, Avatar, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Grid, IconButton, Typography, Avatar, Menu, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; 
 import HomeIcon from '@mui/icons-material/Home';
 
@@ -9,6 +9,8 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {user, setToken, setIsLoggedIn, setUser} = useUser()
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -55,9 +57,11 @@ const Header: React.FC = () => {
                 <Grid item>
                   <Avatar alt="User Avatar" src={user.picture} />
                 </Grid>
-                <Grid item>
-                  <Typography variant="subtitle1">{user.name}</Typography>
-                </Grid>
+                {!isSmallScreen && (
+                  <Grid item>
+                    <Typography variant="subtitle1">{user.name}</Typography>
+                  </Grid>
+                )}
               </Grid>
             </IconButton>
             <Menu

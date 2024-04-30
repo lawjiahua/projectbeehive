@@ -151,9 +151,24 @@ class ApiService {
     return data;
   } 
 
-  static async fetchNectarData(beehive: string, date: string): Promise<NectarDataResponse> {
+  // static async fetchNectarData(beehive: string, date: string): Promise<NectarDataResponse> {
+  //   try {
+  //       const url = `${this.API_BASE_URL}/weight/nectarMonitoring/${encodeURIComponent(beehive)}?date=${encodeURIComponent(date)}`;
+  //       const response = await fetch(url);
+  //       if (!response.ok) {
+  //           throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
+  //       const data: NectarPlotPoint[] = await response.json();
+  //       return { data };
+  //   } catch (error) {
+  //       console.error("Error fetching weight data:", error);
+  //       return { data: [], error: error instanceof Error ? error.message : String(error) };
+  //   }
+  // }
+
+  static async fetchNectarData(beehive: string): Promise<NectarDataResponse> {
     try {
-        const url = `${this.API_BASE_URL}/weight/nectarMonitoring/${encodeURIComponent(beehive)}?date=${encodeURIComponent(date)}`;
+        const url = `${this.API_BASE_URL}/weight/nectar/${encodeURIComponent(beehive)}`;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

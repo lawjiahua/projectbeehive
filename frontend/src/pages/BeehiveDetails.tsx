@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { Link as RouterLink, useParams, useNavigate } from 'react-router-dom';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Breadcrumbs, Link } from '@mui/material';
 
 import ApiService from '../services/ApiService';
-import { Api, ApiOutlined } from '@mui/icons-material';
 import { AlertData } from '../models/Alert';
 
 interface MonitoringItem {
   function: string;
   status: JSX.Element;
   timestamp: string;
+  iconPath: string;
 }
 
 const BeehiveDetails: React.FC = () => {
@@ -17,6 +17,7 @@ const BeehiveDetails: React.FC = () => {
   const [monitoringItems, setMonitoringItems] = useState<MonitoringItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
       ApiService.getOutstandingAlerts(beehiveName || 'beehive1')
@@ -36,9 +37,12 @@ const BeehiveDetails: React.FC = () => {
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom>
-        Beehive Details for {beehiveName}
-      </Typography>
+      <Breadcrumbs aria-label='breadcrumb' sx={{ mt: 3, mb: 2 }}>
+        <Link underline="hover" color="inherit" onClick={() => navigate('/')}>
+            Home
+        </Link>
+        <Typography>{beehiveName}</Typography>
+      </Breadcrumbs>
       <TableContainer component={Paper}>
         <Table aria-label="beehive details table">
           <TableHead>
@@ -52,9 +56,14 @@ const BeehiveDetails: React.FC = () => {
             {monitoringItems.map((alert, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Link to={`/${beehiveName}/${encodeURIComponent(alert.function)}`}>
+                  <RouterLink to={`/${beehiveName}/${encodeURIComponent(alert.function)}`}>
+                  <img 
+                    src={alert.iconPath} 
+                    alt={`${alert.function} icon`} 
+                    style={{ width: '28px', height: '28px', marginRight: 8, verticalAlign: 'middle' }}
+                  />
                     {alert.function}
-                  </Link>
+                  </RouterLink>
                 </TableCell>
                 <TableCell>{alert.status}</TableCell>
                 <TableCell>{alert.timestamp}</TableCell>
@@ -88,7 +97,8 @@ const mapAlertsToMonitoringFunctions = (alerts: AlertData[]): MonitoringItem[] =
   const defaultMonitoringItems: MonitoringItem[] = Object.entries(functionMappings).map(([alertType, functionName]) => ({
       function: functionName,
       status: <span style={{ color: 'green' }}>&#10003; All good</span>,
-      timestamp: '-'
+      timestamp: '-',
+      iconPath: `/functions/${functionName.replace(/ /g, '_').toLowerCase()}.png`
   }));
 
   alerts.forEach(alert => {

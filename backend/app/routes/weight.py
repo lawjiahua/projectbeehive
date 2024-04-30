@@ -102,3 +102,18 @@ def get_past_week_nectar_monitoring_readings(beehive_name):
             })
 
     return jsonify(combined_data)
+
+@weight_bp.route('/nectar/<beehive_name>')
+def get_nectar_data_for_beehive(beehive_name):
+    if not beehive_name:
+        return jsonify({'error': 'Missing beehive_name parameter'}), 400
+
+    data = list(get_db('nectar').find({
+        "beehive": beehive_name,
+        "actualGain": {"$exists": True}  # Ensure actualGain exists
+    }, {
+        "_id": 0, "actualGain": 1, "beehive": 1, "infraredReading": 1 
+    }))
+    
+    # Since dumps returns a string, convert it back to a list of dicts for Flask to handle it
+    return jsonify(data), 200

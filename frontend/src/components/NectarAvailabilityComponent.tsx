@@ -6,7 +6,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
 import { formatRelative, parseISO } from 'date-fns';
 
-import { WeightDataPoint } from '../models/WeightDataPoint';
+// import { WeightDataPoint } from '../models/WeightDataPoint';
 import { AlertData } from '../models/Alert';
 
 
@@ -28,20 +28,23 @@ const formatDate = (date: Date): string => {
 };
 
 const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiveName, setLoading }) => {
-    const [chartData, setChartData] = useState<Array<(string | number)[]>>([['Date', 'Weight', 'Infrared Reading']]);
+    const [chartData, setChartData] = useState<Array<(string | number)[]>>([['Weight', 'Infrared Reading']]);
     const [alert, setAlert] = useState<AlertData | null>(null);
-    const [queryDate, setQueryDate] = useState<string>('2024-04-20')
+    // const [queryDate, setQueryDate] = useState<string>('2024-04-20')
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         ApiService.fetchAlertsForBeehiveFunction(beehiveName, 'Availability of Nectar').then((alertsData) => {
             const activeAlert = alertsData.find(alert => alert.status === 'active');
             setAlert(activeAlert);
-            ApiService.fetchNectarData(beehiveName, formatDate(new Date())).then(response => { 
+            ApiService.fetchNectarData(beehiveName).then(response => { 
                 if (response.data && response.data.length > 0) {
                     // Prepare data specifically for plotting
-                    const formattedData = response.data.map(item => [item.infraredReading, item.actualGain]);
-                    console.log(formattedData.length)
+                    const formattedData = response.data.map(item => [
+                        item.infraredReading, 
+                        item.actualGain,
+                        // 0.1224 *  Number(item.actualGain)
+                    ]);
                     setChartData([['Infrared Reading', 'Weight'], ...formattedData]);
                 } else {
                     setError('No data available');
@@ -62,6 +65,18 @@ const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiv
         } catch (error) {
             console.error("Error resolving alert:", error);
         }
+    };
+
+    const options = {
+        title: 'Weight / Traffic',
+        hAxis: { title: 'Traffic' },
+        vAxis: { title: 'Weight' },
+        seriesType: 'scatter',
+        series: {
+            0: { pointSize: 5, color: 'blue' },
+        },
+        legend: 'bottom',
+        trendlines: { 0: {} }
     };
 
     return (
@@ -92,25 +107,35 @@ const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiv
                 )}
 
                 <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-                    <Typography variant="h6">Weight / Traffic graph</Typography>
-                    <Chart
+                    <Typography variant="h6">Nectar / Traffic graph</Typography>
+                    {/* <Chart
                         chartType="ScatterChart"
                         width="100%"
                         height="400px"
                         data={chartData}
                         options={{
                             title: 'Weight vs. Infrared Reading',
-                            hAxis: { title: 'Infrared Reading' },
-                            vAxis: { title: 'Weight (kg)' },
-                            legend: 'none',
-                            pointSize: 5
+                            hAxis: { title: 'Traffic', format: 'decimal' },
+                            vAxis: { title: 'Nectar Weight gain (kg)', format: 'decimal' },
+                            legend: 'bottom',
+                            series: {
+                                0: { pointSize: 5, color: 'blue' },
+                                1: { lineWidth: 2, color: 'green', visibleInLegend: true, labelInLegend: 'Best Fit' }
+                            },
                         }}
+                    /> */}
+                    <Chart
+                        chartType="ComboChart"
+                        width="100%"
+                        height="400px"
+                        data={chartData}
+                        options={options}
                     />
                 </Paper>
 
-                <Paper elevation={3} sx={{ p: 2 }}>
+                {/* <Paper elevation={3} sx={{ p: 2 }}>
                     <Typography variant="h6">Filter Data</Typography>
-                    {/* <TextField
+                    <TextField
                         label="Filter From Date"
                         type="date"
                         InputLabelProps={{
@@ -119,8 +144,8 @@ const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiv
                         value={fromDate}
                         onChange={e => setFromDate(e.target.value)}
                         sx={{ mt: 2, mb: 2, width: '100%' }}
-                    /> */}
-                </Paper>
+                    />
+                </Paper> */}
             </Box>
         </Container>
     );

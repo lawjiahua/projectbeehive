@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
-import { Box, CircularProgress } from '@mui/material';
+import { useParams, Navigate, Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Box, CircularProgress , Breadcrumbs, Typography, Link} from '@mui/material';
 // Import other components onc   e they are uncommented and used
 import HoneyProductionComponent from '../components/HoneyProductionComponent';
 import AnomalyDetectionComponent from '../components/AnomalyDetectionComponent';
@@ -15,6 +15,7 @@ interface FunctionComponentMap {
 const FunctionDetails = () => {
   const { beehiveName, functionName } = useParams<{ beehiveName: string; functionName?: string }>();
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate()
   
   if (!functionName) {
     return <Navigate to="/" replace />;
@@ -43,7 +44,15 @@ const FunctionDetails = () => {
           <CircularProgress />
         </Box>
       )}
-      <h2>Details for {decodedFunctionName} in {beehiveName}</h2>
+      <Breadcrumbs aria-label='breadcrumb' sx={{ mt: 3 }}>
+        <Link underline="hover" color="inherit" onClick={() => navigate('/')}>
+            Home
+        </Link>
+        <Link component={RouterLink} underline="hover" color="inherit" to={`/${beehiveName}`}>
+            {beehiveName}
+        </Link>
+        <Typography>{decodedFunctionName}</Typography>
+      </Breadcrumbs>
       <FunctionComponent beehiveName={beehiveName} setLoading={setLoading}/>
     </div>
   );

@@ -172,13 +172,15 @@ const EnvironmentMonitoringComponent: React.FC<AnomalyDetectionProps> = ({ beehi
                                 <CircularProgress />
                             </Box>
                         ) : (
-                            <Chart
-                                chartType="LineChart"
-                                width="100%"
-                                height="400px"
-                                data={chartData}
-                                options={options}
-                            />
+                            <div style={{ width: '100%', maxWidth: '400px', margin: 'auto' }}>
+                                <Chart
+                                    chartType="LineChart"
+                                    width="100%"
+                                    height="300px"
+                                    data={chartData}
+                                    options={options}
+                                />
+                            </div>
                         )}
                     </Paper>
                 )}

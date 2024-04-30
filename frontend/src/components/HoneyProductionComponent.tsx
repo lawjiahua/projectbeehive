@@ -5,15 +5,20 @@ import { Typography, Paper, TextField, Box, Container, Alert, Button } from '@mu
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
 import { formatRelative, parseISO } from 'date-fns';
+import { styled } from '@mui/system';
 
 import { WeightDataPoint } from '../models/WeightDataPoint';
 import { AlertData } from '../models/Alert';
-
-
 interface HoneyProductionProps {
     beehiveName: string;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+const ResponsiveContainer = styled(Container)(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '100%', // Overrides the maxWidth to be 100% on small screens
+    },
+}));
 
 const HoneyProductionComponent: React.FC<HoneyProductionProps> = ({ beehiveName, setLoading }) => {
     const [weights, setWeights] = useState<Array<Array<string | Float32Array>>>([]);
@@ -64,7 +69,7 @@ const HoneyProductionComponent: React.FC<HoneyProductionProps> = ({ beehiveName,
     };
 
     return (
-        <Container maxWidth="md">
+        <ResponsiveContainer maxWidth="md">
             <Box sx={{ my: 4 }}>
                 <Typography variant="h4" gutterBottom>
                     Honey Production Details for {beehiveName}
@@ -100,22 +105,9 @@ const HoneyProductionComponent: React.FC<HoneyProductionProps> = ({ beehiveName,
                         options={options}
                     />
                 </Paper>
-
-                <Paper elevation={3} sx={{ p: 2 }}>
-                    <Typography variant="h6">Filter Data</Typography>
-                    {/* <TextField
-                        label="Filter From Date"
-                        type="date"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        value={fromDate}
-                        onChange={e => setFromDate(e.target.value)}
-                        sx={{ mt: 2, mb: 2, width: '100%' }}
-                    /> */}
-                </Paper>
+                
             </Box>
-        </Container>
+        </ResponsiveContainer>
     );
 };
 

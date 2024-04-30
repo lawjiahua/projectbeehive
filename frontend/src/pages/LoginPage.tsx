@@ -65,11 +65,14 @@ const LoginPage: React.FC = () => {
         </Typography>
 
         {/* Buttons */}
-        <Box marginTop={4} width="100%">
-          <GoogleLogin
-            onSuccess={handleLoginSuccess}
-            onError={() => console.log('Login Failed')}
-          />
+        <Box marginTop={4} width="100%" alignItems={'center'}>
+          <div style={{ display: 'grid', placeItems: 'center', height: '10vh' }}>
+            <GoogleLogin 
+              onSuccess={handleLoginSuccess}
+              onError={() => console.log('Login Failed')}
+            />
+          </div>
+
         </Box>
       </Box>
     </Container>
