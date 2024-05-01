@@ -45,6 +45,7 @@ COPY . .
 
 # Build the project for production
 RUN npm run build
+RUN ls -la build
 
 # Install serve to serve your app on port 3000
 RUN npm install -g serve

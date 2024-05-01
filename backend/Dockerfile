@@ -39,4 +39,4 @@ ENV FLASK_APP=run.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
 # Run app.py when the container launches
-CMD ["python3", "run"]
+CMD ["python3", "run.py"]

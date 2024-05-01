@@ -24,6 +24,7 @@ __pycache__/
 /frontend/package-lock.json
 /frontend/yarn.lock
 /frontend/.env
+/frontend/build
 
 # Logs and databases
 *.log
