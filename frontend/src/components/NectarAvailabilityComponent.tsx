@@ -28,10 +28,11 @@ const formatDate = (date: Date): string => {
 };
 
 const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiveName, setLoading }) => {
-    const [chartData, setChartData] = useState<Array<(string | number)[]>>([['Weight', 'Infrared Reading']]);
+    const [chartData, setChartData] = useState<Array<(string | number| null)[]>>([['Weight', 'Infrared Reading', 'Best fit']]);
     const [alert, setAlert] = useState<AlertData | null>(null);
     // const [queryDate, setQueryDate] = useState<string>('2024-04-20')
     const [error, setError] = useState<string | null>(null);
+    const [bestFitLineColor, setBestFitLineColor] = useState<string>("green");
 
     useEffect(() => {
         ApiService.fetchAlertsForBeehiveFunction(beehiveName, 'Availability of Nectar').then((alertsData) => {
@@ -40,12 +41,38 @@ const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiv
             ApiService.fetchNectarData(beehiveName).then(response => { 
                 if (response.data && response.data.length > 0) {
                     // Prepare data specifically for plotting
-                    const formattedData = response.data.map(item => [
-                        item.infraredReading, 
-                        item.actualGain,
-                        // 0.1224 *  Number(item.actualGain)
-                    ]);
-                    setChartData([['Infrared Reading', 'Weight'], ...formattedData]);
+                    const formattedData = []
+                    response.data.forEach(item => {
+                        var dataPoint = [
+                            Number(item.infraredReading), 
+                            item.actualGain,
+                            null
+                        ]
+                        formattedData.push(dataPoint)
+                        if(Number(item.infraredReading) > 0.99){
+                        }
+                    });
+                    if(activeAlert){
+                        setBestFitLineColor("red")
+                        formattedData.push([0, null, 0], [0.99, null, 0.40])
+                    } else {
+                        formattedData.push([0, null, 0], [0.99, null, 0.70])
+                    }
+                    // console.log(response.data)
+                    // const normalData = [];
+                    // const highlightedData: Array<[number, number]> = [];
+                    // response.data.forEach(item => {
+                    //         const dataPoint = [item.infraredReading, item.actualGain];
+                    //         const bestFitdataPoint: [number, number] = [Number(item.infraredReading), Number(item.actualGain) * 0.1224];
+                    //         normalData.push(dataPoint);
+                    // });
+                    // console.log(normalData)
+                    // setChartData([
+                    //     ['Infrared Reading', 'Normal Weight', 'Highlighted Weight'],
+                    //     ...normalData.map(point => [...point, null]),
+                    //     ...highlightedData.map(point => [point[0], null, point[1]])
+                    // ]);
+                    setChartData([['Infrared Reading', 'Weight', 'bestFit'], ...formattedData]);
                 } else {
                     setError('No data available');
                 }
@@ -74,9 +101,9 @@ const NectarAvailabilityComponent: React.FC<NectarAvailabilityProps> = ({ beehiv
         seriesType: 'scatter',
         series: {
             0: { pointSize: 5, color: 'blue' },
+            1: { type: 'line', lineWidth: 2, color: bestFitLineColor }
         },
-        legend: 'bottom',
-        trendlines: { 0: {} }
+        legend: 'none',
     };
 
     return (
