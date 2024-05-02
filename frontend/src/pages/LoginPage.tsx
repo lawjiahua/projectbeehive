@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google'; 
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google'; 
 
 import ApiService from '../services/ApiService';
 import { useUser } from '../UserContext';
@@ -41,6 +41,8 @@ const LoginPage: React.FC = () => {
       console.error('Error processing login:', error);
     }
   };
+
+  const login = useGoogleLogin({onSuccess: handleLoginSuccess})
 
   return (
     <Container maxWidth="sm">
