@@ -11,27 +11,28 @@ import ProtectedRoute from './ProtectedRoute';
 import FunctionDetails from './pages/FunctionDetails';
 
 const App: React.FC = () => {
-  const {isLoggedIn} = useUser()
+  // const {isLoggedIn} = useUser()
 
   return (
     <Router>
-      {isLoggedIn && <Header/>}
+      {/* {isLoggedIn && <Header/>} */}
+        <Header/>
         <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        {/* <Route path="/login" element={<LoginPage />} /> */}
           <Route path="/" element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <HomePage />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           } />
           <Route path="/:beehiveName" element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <BeehiveDetails />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           } />
           <Route path="/:beehiveName/:functionName" element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <FunctionDetails />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           } />
         </Routes>
     </Router>

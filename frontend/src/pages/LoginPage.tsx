@@ -17,6 +17,7 @@ const LoginPage: React.FC = () => {
   }, [])
 
   const handleLoginSuccess = async(response : any) => {
+    console.log(response)
     try{
       const token = response?.credential;
       const data = await ApiService.loginWithGoogle(token);
@@ -69,10 +70,11 @@ const LoginPage: React.FC = () => {
         {/* Buttons */}
         <Box marginTop={4} width="100%" alignItems={'center'}>
           <div style={{ display: 'grid', placeItems: 'center', height: '10vh' }}>
-            <GoogleLogin 
+            {/* <GoogleLogin 
               onSuccess={handleLoginSuccess}
               onError={() => console.log('Login Failed')}
-            />
+            /> */}
+            <Button variant='contained' onClick={() => login()}> Login/ Register with google</Button>
           </div>
 
         </Box>

@@ -8,16 +8,15 @@ import { BeehiveAlertResponse } from '../models/BeehiveAlertResponse';
 import './Pages.css';
 
 const BeehiveDashboard = () => {
-  const { user } = useUser();
+  // const { user } = useUser();
   const [alerts, setAlerts] = useState<BeehiveAlertResponse>({});
 
   useEffect(() => {
-    if (user && user.beehives) {
-      ApiService.getBeehiveAlerts(user.beehives)
+      ApiService.getBeehiveAlerts(["beehive1","beehive2","beehive3","beehive4","beehive5","beehive6",])
         .then(setAlerts)
         .catch(console.error); // Handle errors more gracefully in production
-    }
-  }, [user]);
+
+  }, []);
 
   return (
     <TableContainer component={Paper}>

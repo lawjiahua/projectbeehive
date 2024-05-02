@@ -8,7 +8,7 @@ import { useUser } from '../UserContext';
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const {user, setToken, setIsLoggedIn, setUser} = useUser()
+  // const {user, setToken, setIsLoggedIn, setUser} = useUser()
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -20,24 +20,24 @@ const Header: React.FC = () => {
     setAnchorEl(null);
   };
   
-  const handleLogout = () => {
-    console.log('Logging out');
-    setUser(null);
-    setToken(null);
-    setIsLoggedIn(false);
-    handleClose();
-    navigate("/login")
-  };
+  // const handleLogout = () => {
+  //   console.log('Logging out');
+  //   setUser(null);
+  //   setToken(null);
+  //   setIsLoggedIn(false);
+  //   handleClose();
+  //   navigate("/login")
+  // };
 
-  const handleProfile = () => {
-    // Navigate to profile page
-    navigate('/profile');
-    handleClose();
-  };
+  // const handleProfile = () => {
+  //   // Navigate to profile page
+  //   navigate('/profile');
+  //   handleClose();
+  // };
 
-  if (!user) {
-    return <div>No user data available</div>;
-  }
+  // if (!user) {
+  //   return <div>No user data available</div>;
+  // }
 
   return (
     <AppBar position="static">
@@ -55,11 +55,11 @@ const Header: React.FC = () => {
             <IconButton onClick={handleMenu} color="inherit">
               <Grid container alignItems="center" spacing={1}>
                 <Grid item>
-                  <Avatar alt="User Avatar" src={user.picture} />
+                  <Avatar alt="User Avatar" src='/user.png' />
                 </Grid>
                 {!isSmallScreen && (
                   <Grid item>
-                    <Typography variant="subtitle1">{user.name}</Typography>
+                    <Typography variant="subtitle1">Demo account</Typography>
                   </Grid>
                 )}
               </Grid>
@@ -77,8 +77,8 @@ const Header: React.FC = () => {
                 horizontal: 'left',
               }}
             >
-              <MenuItem onClick={handleProfile}>Profile</MenuItem>
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem>Profile</MenuItem>
+              <MenuItem>Logout</MenuItem>
             </Menu>
           </Grid>
         </Grid>
