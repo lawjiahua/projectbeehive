@@ -14,7 +14,7 @@ import { WeightDataPoint } from "../models/WeightDataPoint";
 
 class ApiService {
   private static API_BASE_URL: string = 'http://54.255.176.252:5000';  
-  // private static API_BASE_URL: string = 'http://13.215.47.20:5000'; // aws instance
+  // private static API_BASE_URL: string = 'localhost:3000'
 
   static async loginWithGoogle(token : string): Promise<any> {
     try{

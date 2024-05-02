@@ -24,7 +24,10 @@ def create_app():
     # app.json_encoder = CustomJSONEncoder
     app.config.from_object(Config)
     CORS(app, resources={
-        r"/*": {"origins": "http://ec2-54-255-176-252.ap-southeast-1.compute.amazonaws.com:3000", 
+        r"/*": {"origins": [
+                    "http://localhost:3000", 
+                    "http://ec2-54-255-176-252.ap-southeast-1.compute.amazonaws.com:3000", 
+                ],
                  "allow_headers": ["Authorization", "Content-Type"],
                  "methods": ["GET", "POST", "OPTIONS"]
                 }

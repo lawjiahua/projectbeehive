@@ -85,11 +85,9 @@ const ComfortOfHiveComponent: React.FC<AnomalyDetectionProps> = ({ beehiveName, 
         }
     };
 
-    const determineStatus = (value: number, highThreshold: number, lowThreshold: number) => {
-        if (value >= highThreshold) {
+    const determineStatus = () => {
+        if(alert){
             return { text: 'High', color: 'red' };
-        } else if (value <= lowThreshold) {
-            return { text: 'Low', color: 'red' };
         } else {
             return { text: 'Normal', color: 'green' };
         }
@@ -152,7 +150,7 @@ const ComfortOfHiveComponent: React.FC<AnomalyDetectionProps> = ({ beehiveName, 
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh' }}> {/* Added styles */}
                 <Box sx={{ my: 4 }}>
                 <Typography variant="h4" gutterBottom>
-                    Environment Monitoring Details for {beehiveName}
+                    Comfort of Hive Details for {beehiveName}
                 </Typography>
 
                 {alert ? (
@@ -179,9 +177,9 @@ const ComfortOfHiveComponent: React.FC<AnomalyDetectionProps> = ({ beehiveName, 
                     <Grid item xs={6}>
                         <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
                             <Typography variant="h6">Temperature:</Typography>
-                            <Box sx={{ color: temperatureReading ? determineStatus(temperatureReading, 30, 15).color : 'inherit' }}>
+                            <Box sx={{ color: temperatureReading ? determineStatus().color : 'inherit' }}>
                                 <Typography variant="h5">
-                                    {temperatureReading ? determineStatus(temperatureReading, 30, 15).text : 'Loading...'}
+                                    {temperatureReading ? determineStatus().text : 'Loading...'}
                                 </Typography>
                             </Box>
                         </Paper>
@@ -189,9 +187,9 @@ const ComfortOfHiveComponent: React.FC<AnomalyDetectionProps> = ({ beehiveName, 
                     <Grid item xs={6}>
                         <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
                             <Typography variant="h6">Humidity:</Typography>
-                            <Box sx={{ color: humidityReading ? determineStatus(humidityReading, 80, 20).color : 'inherit' }}>
+                            <Box sx={{ color: humidityReading ? determineStatus().color : 'inherit' }}>
                                 <Typography variant="h5">
-                                    {humidityReading ? determineStatus(humidityReading, 80, 20).text : 'Loading...'}
+                                    {humidityReading ? determineStatus().text : 'Loading...'}
                                 </Typography>
                             </Box>
                         </Paper>
