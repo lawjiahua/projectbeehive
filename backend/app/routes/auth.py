@@ -43,7 +43,7 @@ def google_login():
                 "email": user_info['email'],
                 "name": user_info['name'],
                 "roles": ["admin"],
-                "beehives": ["beehive1", "beehive2"],
+                "beehives": ["beehive1", "beehive2", "beehive3", "beehive4", "beehive5", "beehive6"],
                 "picture": user_info['picture']
             }
             insert_result = users_collection.insert_one(user_document) 
