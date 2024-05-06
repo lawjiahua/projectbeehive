@@ -13,8 +13,8 @@ import { User } from "../models/User";
 import { WeightDataPoint } from "../models/WeightDataPoint";
 
 class ApiService {
-  private static API_BASE_URL: string = 'http://54.255.176.252:5000';  
-  // private static API_BASE_URL: string = 'localhost:3000'
+  private static API_BASE_URL: string = 'http://13.229.56.138:5000';  
+  // private static API_BASE_URL: string = 'localhost:5000'
 
   static async loginWithGoogle(token : string): Promise<any> {
     try{
