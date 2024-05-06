@@ -29,15 +29,15 @@ def weights_past_week():
 @weight_bp.route('/<beehive_name>')
 def weights_for_beehive(beehive_name):
     # Get the database collection
-    weights_collection = get_db('weightTest')
+    weights_collection = get_db('weight')
 
     one_week_ago = datetime.now() - timedelta(days=7)
     # Query to find weights for the specified beehive in the past week
     query = {
         "beehive": beehive_name,
-        "date": {"$gte": one_week_ago}
+        # "date": {"$gte": one_week_ago}
     }
-    weights = list(weights_collection.find(query))
+    weights = list(weights_collection.find(query).sort("date", 1))
 
     # Process the weights to be JSON serializable
     processed_weights = []
