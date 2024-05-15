@@ -26,6 +26,7 @@ def create_app():
     CORS(app, resources={
         r"/*": {"origins": [
                     "http://localhost:3000", 
+                    "http://localhost:8080",
                     "http://ec2-13-229-56-138.ap-southeast-1.compute.amazonaws.com:3000", 
                 ],
                  "allow_headers": ["Authorization", "Content-Type"],

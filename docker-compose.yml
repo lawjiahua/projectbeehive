@@ -15,21 +15,55 @@
 #     depends_on:
 #       - backend
 # docker-compose.yml
+# version: '3.8'
+# services:
+#   backend:
+#     build: ./backend
+#     volumes:
+#       - ./backend:/app
+#     ports:
+#       - "5000:5000"
+#     environment:
+#       - FLASK_ENV=development
+
+#   frontend:
+#     build: ./frontend
+#     volumes:
+#       - ./frontend:/usr/src/app
+#       # - /usr/src/app/node_modules
+#     ports:
+#       - "3000:3000"
+
+# Test version with NGINX
 version: '3.8'
 services:
-  backend:
-    build: ./backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     volumes:
-      - ./backend:/app
+    - ./frontend:/usr/src/app
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+    - ./backend:/app
     ports:
       - "5000:5000"
-    environment:
-      - FLASK_ENV=development
 
-  frontend:
-    build: ./frontend
-    volumes:
-      - ./frontend:/usr/src/app
-      # - /usr/src/app/node_modules
+  nginx:
+    image: nginx:alpine
     ports:
-      - "3000:3000"
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend/build:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend
+      - backend
