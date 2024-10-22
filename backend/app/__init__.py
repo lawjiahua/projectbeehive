@@ -27,6 +27,7 @@ def create_app():
         r"/*": {"origins": [
                     "http://localhost:3000", 
                     "http://localhost:8080",
+                    "http://localhost:80",
                     "http://ec2-13-229-56-138.ap-southeast-1.compute.amazonaws.com:3000", 
                 ],
                  "allow_headers": ["Authorization", "Content-Type"],

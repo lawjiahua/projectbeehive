@@ -47,7 +47,7 @@ const Header: React.FC = () => {
           <Grid item>
           <IconButton onClick={() => navigate('/')} color="inherit">
               <HomeIcon /> {/* Home icon */}
-              <Typography variant="h6" style={{ marginLeft: '10px' }}>Beehive monitoring</Typography>
+              <Typography variant="h6" style={{ marginLeft: '10px' }}>Trigona-Moni</Typography>
             </IconButton>
           </Grid>
           {/* User Info */}
